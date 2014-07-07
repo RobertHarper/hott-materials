@@ -1,0 +1,359 @@
+\documentclass[12pt]{article}
+
+\input{hw3-macros}
+
+\usepackage{palatino}
+\usepackage{mdframed}
+\usepackage[usenames,svgnames]{xcolor}
+\newcommand{\cut}[1]{}
+\def\StripPrefix#1>{}
+\def\jobis#1{FF\fi
+  \def\predicate{#1}%
+  \edef\predicate{\expandafter\StripPrefix\meaning\predicate}%
+  \edef\job{\jobname}%
+  \ifx\job\predicate
+}
+\if\jobis{hw3-solution}%
+  \newcommand{\marksolution}[1]{\color{FireBrick}#1\normalcolor}%
+\else%
+  \newcommand{\marksolution}[1]{\cut{#1}}%
+\fi
+\newenvironment{solution}{\trivlist \item[\hskip \labelsep{\bf
+Solution:}]}{\endtrivlist}
+\newcommand{\markextra}[1]{\color{DarkOliveGreen}#1\normalcolor}
+\mdfdefinestyle{extra}{linecolor=DarkOliveGreen,fontcolor=DarkOliveGreen}
+
+\title{\Large\textbf{
+  Homework 3: Identity Crisis}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 19/Oct/13\\
+Due: 2/Nov/13
+}
+
+\begin{document}
+
+\maketitle
+
+\section{J Walkers}
+
+\subsection{Transitive Transportation}
+
+\begin{task}
+  Implement these programs.
+  \begin{enumerate}
+    \item $\trans'_A$ by induction on another path argument.
+    \item $\trans''_A$ in terms of $\tr$.
+    \item
+      $\ap'_f(p)$ in terms of $\tr$,
+      where (in the current context) $f : A \to B$
+      and $p : \Id_A(m,n)$.
+  \end{enumerate}
+  In addition, briefly summarize the computational rules
+  (definitional equalities)
+  your implementation satisfies.
+  For example, the $\trans_A$ given in class
+  satisfies the following definitional equality.
+  \[
+    \trans_A(m)(m)(n)(\refl_A(m))(p) \jdeq p
+  \]
+\end{task}
+
+\marksolution{
+  \begin{solution}\mbox{}
+    \begin{enumerate}
+      \item $\trans'_A$
+        \begin{gather*}
+          \trans'_A \defeq \lambda mnpuv. \J[n.p.\dummy.\Id_A(m,n)\to\Id_A(m,p)](v,n.\id_A)(u)
+          \\
+          \trans'_A(m)(n)(n)(u)(\refl_A(n)) \jdeq u
+        \end{gather*}
+      \item $\trans''_A$
+        \begin{gather*}
+          \trans''_A \defeq \lambda mnpuv. \tr[n.\Id_A(m,n)](v)(u)
+          \\
+          \trans''_A(m)(n)(n)(u)(\refl_A(n)) \jdeq u
+        \end{gather*}
+      \item $\ap'_f(p)$
+        \begin{gather*}
+          \ap'_f(p) \defeq \tr[n.\Id_B(f\,m,f\,n)](p)(\refl_B(f\,n))
+          \\
+          \ap'_f(\refl_A(n)) \jdeq \refl_B(f\,n)
+        \end{gather*}
+    \end{enumerate}
+  \end{solution}
+}
+
+\subsection{Group Ticket}
+
+Every type $A$ in HoTT can be viewed as a (higher) groupoid.
+The purpose of this part is to verify some critical rules,
+but before going to the task,
+there is one thing that you need to understand.
+
+In the following task, you are required to explicitly
+write down endpoints in the motive of $\J$.
+The reason is that there are cases where, if you could plug in $\refl_A(m)$ directly,
+the theorem would be trivial;
+however, in order to come up with a valid motive,
+you need to generalize the theorem considerably.
+The difficulty is all in finding the right motive.
+
+One example is the Eckmann-Hilton theorem (in HoTT)
+\[
+  \prod_{(m{:}A)}\prod_{(p,q{:}\refl_A(m)=\refl_A(m))}p\concat q = q\concat p,
+\]
+which would be trivial if you could simply consider the case $p \defeq \refl_{\Id_A(m,m)}(\refl_A(m))$.
+The problem is that you cannot easily find a suitable motive
+for $\J$ to put such $\refl$ in.
+The motive of $\J$, which can be written as $m.n.p.C$,
+requires two endpoints ($m$ and $n$) of $p$ to be ``free'' in $C$.
+In other words, $C$ needs to be generic in $m$ and $n$ and $p$.
+Unfortunately, coming up with such a motive for this theorem requires some work.
+One can show that there is an alternative, equivalent $\J$
+that only requires one endpoint to be ``free'', but not less.
+Work still needs to be done in order to ``free'' at least one endpoint
+in the above theorem.
+\begin{bonus}
+Briefly explain what would fail if you took the theorem as the motive of $\J$ directly.
+\end{bonus}
+\marksolution{
+\begin{solution}
+  \textit{This question is open-ended. The following is just one possible answer.}
+  One plausible choice is to do induction on $p$ along with its endpoints directly.
+  Without loss of generality, assume $p$ has the type $m = n$.
+  In order to make both $p \concat q$ and $q \concat p$ type check,
+  $q$ must have the type $n = m$.
+  However, if $p \concat q = q \concat p$ is well-typed then $m \jdeq n$,
+  which defeats the freeness of endpoints.
+\end{solution}
+}
+
+\newrobustcmd*{\K}{\mathsf{K}}
+
+What would happen if we allowed motives that are not
+generic in endpoints?
+In fact, there is another famous rule, named $\K$, which is similar to $\J$
+but does not demand such great freeness of endpoints in $\J$.
+The additional rule $\K$ essentially allows one to consider restricted motives
+$m.p.C$
+where both endpoints of $p$ must be the same.
+\[
+  \inferrule{
+    \ctx \entails A : \U
+    \\
+    \ctx \entails M : A
+    \\
+    \ctx \entails P : \Id_A(M,M)
+    \\
+    \ctx,m{:}A,p{:}\Id_A(m,m) \entails C : \U
+    \\
+    \ctx,m{:}A \entails Q : [m,\refl_A(m)/m,p]C
+  }{
+    \ctx \entails \K[m.p.C](P,m.Q) : [M,P/m,p]C
+  }
+\]
+One can show that including this rule $\K$
+(in addition to $\J$)
+to our type theory
+implies \emph{uniqueness of identity paths}
+and collapse of all higher structures.
+Thus, we must be careful about these endpoints in HoTT.
+The reason why this rule or freeness of endpoints
+has anything to do with the collapse
+should be more clear in the future lectures.
+Later on we will omit endpoints in favor of more convenient notations,
+but remember that you always have to pay attention to them.
+
+\begin{task}
+  Write code with the following types.
+  You may assume that
+  \[
+    \trans_A(m)(m)(n)(\refl_A(m))(p) \jdeq p
+  \]
+  and
+  \markextra{
+  \[
+    \sym_A(m)(m)(\refl_A(m)) \jdeq \refl_A(m).
+  \]
+  }
+  Please write down the dependency on endpoints in the motive of $\J$ explicitly.
+  \begin{itemize}
+    \item
+      \textbf{Inverse-right.}
+      ``$p \concat p^{-1} = \refl$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\\
+          \Id_{\Id_A(m,m)}(\trans_A(m)(n)(m)(p)(\sym_A(m)(n)(p)), \refl_A(m))
+      \end{multline*}
+    \item
+      \textbf{Inverse-left.}
+      ``$p^{-1} \concat p = \refl$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\\
+        \Id_{\Id_A(n,n)}(\trans_A(n)(m)(n)(\sym_A(m)(n)(p))(p), \refl_A(n))
+      \end{multline*}
+    \item
+      \textbf{Unit-right.}
+      ``$p \concat \refl = p$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\Id_{\Id_A(m,n)}(\trans_A(m)(n)(n)(p)(\refl_A(n)), p)
+      \end{multline*}
+
+    \item
+      \textbf{Unit-left.}
+      ``$\refl \concat p = p$''.
+      \[
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\Id_{\Id_A(m,n)}(\trans_A(m)(m)(n)(\refl_A(m))(p), p)
+      \]
+
+    \item
+      \textbf{Associativity.}
+      ``$(p \concat q) \concat r = p \concat (q \concat r)$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{l{:}A}\prod_{m{:}A}\prod_{n{:}A}\prod_{o{:}A}\prod_{p{:}\Id_A(l,m)}\prod_{q{:}\Id_A(m,n)}\prod_{r{:}\Id_A(n,o)}
+        \\
+        \Id_{\Id_A(l,o)}(\trans_A(l)(n)(o)(\trans_A(l)(m)(n)(p)(q))(r),
+        \\
+        \trans_A(l)(m)(o)(p)(\trans_A(m)(n)(o)(q)(r)))
+      \end{multline*}
+  \end{itemize}
+\end{task}
+
+\markextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Erratum \texttt{(2013/10/29 3pm)}:}
+    The computational behavior of $\sym_A$ is added.
+  \end{mdframed}
+}
+\markextra{
+  \begin{mdframed}[style=extra]
+    \textsc{More Hints \texttt{(2013/10/31 7pm)}:}
+    I highly recommend renaming all bound variables in the motives
+    and check well-typedness of your motives.
+    Do not let two variables of the same name fool you!
+  \end{mdframed}
+}
+
+\marksolution{
+\begin{solution}\mbox{}
+  \begin{itemize}
+    \item\textbf{Inverse-right.}
+      \begin{multline*}
+        \lambda mnp.\J[m.n.p.\Id_{\Id_A(m,m)}(\trans_A(m)(n)(m)(p)(\sym_A(m)(n)(p)), \refl_A(m)))]
+        \\(p,m.\refl_{\Id_A(m,m)}(\refl_A(m)))
+      \end{multline*}
+    \item\textbf{Inverse-left.}
+      \begin{multline*}
+        \lambda mnp.\J[m.n.p.\Id_{\Id_A(n,n)}(\trans_A(n)(m)(n)(\sym_A(m)(n)(p))(p), \refl_A(n)))]\\
+        (p,n.\refl_{\Id_A(n,n)}(\refl_A(n)))
+      \end{multline*}
+    \item\textbf{Unit-right.}
+      \begin{multline*}
+        \lambda mnp.\J[m.n.p.\Id_{\Id_A(m,n)}(\trans_A(m)(n)(n)(p)(\refl_A(n)), p)](p,m.\refl_{\Id(m,n)}(\refl_A(m)))
+      \end{multline*}
+    \item\textbf{Unit-left.}
+      \begin{multline*}
+        \lambda mnp.\refl_{\Id(m,n)}(p)
+      \end{multline*}
+    \item\textbf{Associativity.}
+      \begin{multline*}
+        \textstyle
+        \lambda lmnopqr.
+        \J[l'.m'.p'.\prod_{q':\Id_A(m',n)}\Id_{\Id_A(l',o)}(\trans_A(l')(n)(o)(\trans_A(l')(m')(n)(p')(q'))(r),
+        \\
+        \trans_A(l')(m')(o)(p')(\trans_A(m')(n)(o)(q')(r)))]
+        \\
+        (p,m'.\lambda (q':\Id_A(m',n)).\refl_{\Id_A(m',o)}(\trans_A(m')(n)(o)(q')(r)))(q)
+      \end{multline*}
+  \end{itemize}
+\end{solution}
+}
+
+\section{Elementary Math}
+
+In this section we will show some interesting properties of natural numbers.
+In this section you may omit endpoint arguments (to $\trans_A$ and $\sym_A$)
+and use $\concat$ and $^{-1}$ instead,
+since there are no interesting higher structures in natural numbers anyway.
+Feel free to use $=$, $\ap_f$ and $\tr$ in your programs as well.
+
+\subsection{Commutativity of Addition}
+
+The goal of this section is to show $\prod_a \prod_b a + b =_\nat b + a$.
+Assume that our implementation of $+$ has the following computational behaviors:
+\begin{itemize}
+  \item $\zero + b \jdeq b$.
+  \item $\suc(a) + b \jdeq \suc(a + b)$.
+\end{itemize}
+
+\begin{task}
+  Write code of type $\prod_a a + \zero =_\nat a$ (and probably name it).
+\end{task}
+\marksolution{
+  \begin{solution}
+    $\mathtt{lem}_1 \defeq \lambda a.\rec[a.a+\zero=_\nat a](a, \refl(\zero), x.y.\ap_\suc(y))$.
+  \end{solution}
+}
+\begin{task}
+  Write code of type $\prod_a \prod_b a + \suc(b) =_\nat \suc(a + b)$ (and name it).
+\end{task}
+\marksolution{
+  \begin{solution}
+    $\mathtt{lem}_2 \defeq \lambda ab.\rec[a,a+\suc(b)=_\nat\suc(a+b)](a, \refl(\suc(b)), x.y.\ap_\suc(y))$.
+  \end{solution}
+}
+\begin{task}
+  Finally, write code of type $\prod_a \prod_b a + b =_\nat b + a$
+  which uses the previous two tasks as subroutines.
+\end{task}
+\marksolution{
+  \begin{solution}
+    $\lambda ab.\rec[b.a+b=_\nat b+a](b, \mathtt{lem}_1(a), b.y.\mathtt{lem}_2(a)(b) \concat \ap_\suc(y))$
+  \end{solution}
+}
+
+\subsection{Injectivity of Successor}
+
+\begin{task}
+  Prove (a.k.a. write code of type)
+  \[
+    \prod_a \prod_b (\suc(a) =_\nat \suc(b)) \to (a =_\nat b).
+  \]
+  \begin{hint}
+    Write a function $f$ such that $f(\suc(a)) \jdeq a$.
+  \end{hint}
+\end{task}
+\marksolution{
+\begin{solution}
+  Let $f \defeq \lambda a.\rec[a.\nat](a, \zero, x.y.x)$. $\lambda abp.\ap_f(p)$ does the job.
+\end{solution}
+}
+
+\subsection{Non-degeneracy of Natural Numbers}
+
+\begin{task}
+  Prove $\prod_a (\suc(a) =_\nat \zero) \to \bot$.
+  \begin{hint}
+    Can you come up with a function $f$ and a path $p : a =_\nat b$ such that
+    $f(a) \jdeq \top$ but $f(b) \jdeq \bot$?
+    What can you do with such $f$ and $p$?
+  \end{hint}
+\end{task}
+\marksolution{
+\begin{solution}
+  Let $f \defeq \lambda a.\rec[a.\U](a, \bot, x.y.\top)$. $\lambda abp.\tr[x.f(x)](p)(\triv)$ will work.
+\end{solution}
+}
+
+
+\end{document}

@@ -1,0 +1,53 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Basic packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathpartir}
+\usepackage[usenames,svgnames]{xcolor}
+\usepackage{hyperref}
+\usepackage{xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem-like environments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{lemma}{Lemma}[section]
+\newenvironment{hint}{\noindent{\bf (Hint)}}{}
+\newtheorem{thm}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{task}{Task}
+\newtheorem{bonus}{Bonus Task}
+\renewenvironment{proof}{\trivlist \item[\hskip \labelsep{\bf
+Proof:}]}{\hfill$\Box$ \endtrivlist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros for Heyting Algebra
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand*{\equiv}{\simeq}
+\newcommand*{\init}{\bot}
+\newcommand*{\final}{\top}
+\newcommand*{\meet}{\wedge}
+\newcommand*{\join}{\vee}
+\renewcommand*{\exp}{\supset}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Boolean Algebra
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\comp}[1]{\overline{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% IPL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\ctx}{\Gamma}
+\newcommand*{\entails}{\vdash}
+
+\newcommand*{\judgmentfont}[1]{\textsf{#1}}
+\newcommand*{\postfixjudgment}[1]{%
+  \relax\ifnum\lastnodetype>0\mskip\medmuskip\fi
+  \text{\judgmentfont{#1}}%
+}
+\newcommand*{\prop}{\postfixjudgment{prop}}
+\newcommand*{\true}{\postfixjudgment{true}}
+
+\newcommand*{\conj}{\wedge}
+\newcommand*{\disj}{\vee}
+\newcommand*{\imp}{\supset}

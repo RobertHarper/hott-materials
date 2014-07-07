@@ -1,0 +1,51 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Basic packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathpartir}
+\usepackage{hyperref}
+\usepackage{stmaryrd}
+\usepackage[all]{xy}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem-like environments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{lemma}{Lemma}[section]
+\newenvironment{hint}{\noindent{\bf (Hint)}}{}
+\newtheorem{thm}{Theorem}
+\newtheorem*{remark}{Remark}
+\newtheorem{definition}{Definition}
+\newtheorem{task}{Task}
+\newtheorem{bonus}{Bonus Task}
+\renewenvironment{proof}{\trivlist \item[\hskip \labelsep{\bf
+Proof:}]}{\hfill$\Box$ \endtrivlist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BiCCC
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\sem}[1]{\llbracket #1\rrbracket} % sem = semantics
+\newcommand*{\id}{\mathtt{id}}
+\newcommand*{\comp}{\mathbin{\circ}}
+\newcommand*{\pair}[2]{\langle #1,#2\rangle}
+\newcommand*{\fst}{\mathtt{fst}}
+\newcommand*{\snd}{\mathtt{snd}}
+\newcommand*{\copair}[2]{\{ #1,#2\}} % e.g. coconuts = nuts
+\newcommand*{\inl}{\mathtt{inl}}
+\newcommand*{\inr}{\mathtt{inr}}
+\newcommand*{\ap}{\mathtt{ap}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% IPL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\ctx}{\Gamma}
+\newcommand*{\entails}{\vdash}
+\newcommand*{\defeq}{\equiv} % definitional equality
+% case
+\newcommand*{\case}{\mathtt{case}}
+% NNO and natural numbers
+\newcommand*{\rec}{\mathtt{rec}}
+\newcommand*{\zero}{\mathtt{zero}}
+\newcommand*{\suc}{\mathtt{suc}}
+\newcommand*{\N}{\mathbb{N}}
+\newcommand*{\nat}{\mathtt{nat}}
+\newcommand*{\altrec}{\widetilde{\mathtt{rec}}} % alt = alternative

@@ -1,0 +1,156 @@
+\documentclass[12pt]{article}
+
+\input{hw3-macros}
+
+\title{\Large\textbf{
+  Homework 3: Identity Crisis}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 19/Oct/13\\
+Due: 2/Nov/13
+}
+
+\begin{document}
+
+\maketitle
+
+\section{J Walkers}
+
+\subsection{Transitive Transportation}
+
+\begin{task}
+  Implement these programs.
+  \begin{enumerate}
+    \item $\trans'_A$ by induction on another path argument.
+    \item $\trans''_A$ in terms of $\tr$.
+    \item
+      $\ap'_f(p)$ in terms of $\tr$,
+      where (in the current context) $f : A \to B$
+      and $p : \Id_A(m,n)$.
+  \end{enumerate}
+  In addition, briefly summarize the computational rules
+  (definitional equalities)
+  your implementation satisfies.
+  For example, the $\trans_A$ given in class
+  satisfies the following definitional equality.
+  \[
+    \trans_A(m)(m)(n)(\refl_A(m))(p) \jdeq p
+  \]
+\end{task}
+
+\subsection{Group Ticket}
+
+\[
+  \prod_{(m{:}A)}\prod_{(p,q{:}\refl_A(m)=\refl_A(m))}p\concat q = q\concat p,
+\]
+\begin{bonus}
+Briefly explain what would fail if you took the theorem as the motive of $\J$ directly.
+\end{bonus}
+
+\begin{task}
+  Write code with the following types.
+  You may assume that
+  \[
+    \trans_A(m)(m)(n)(\refl_A(m))(p) \jdeq p
+  \]
+  and
+  \[
+    \sym_A(m)(m)(\refl_A(m)) \jdeq \refl_A(m).
+  \]
+  Please write down the dependency on endpoints in the motive of $\J$ explicitly.
+  \begin{itemize}
+    \item
+      \textbf{Inverse-right.}
+      ``$p \concat p^{-1} = \refl$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\\
+          \Id_{\Id_A(m,m)}(\trans_A(m)(n)(m)(p)(\sym_A(m)(n)(p)), \refl_A(m))
+      \end{multline*}
+    \item
+      \textbf{Inverse-left.}
+      ``$p^{-1} \concat p = \refl$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\\
+        \Id_{\Id_A(n,n)}(\trans_A(n)(m)(n)(\sym_A(m)(n)(p))(p), \refl_A(n))
+      \end{multline*}
+    \item
+      \textbf{Unit-right.}
+      ``$p \concat \refl = p$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\Id_{\Id_A(m,n)}(\trans_A(m)(n)(n)(p)(\refl_A(n)), p)
+      \end{multline*}
+
+    \item
+      \textbf{Unit-left.}
+      ``$\refl \concat p = p$''.
+      \[
+        \textstyle
+        \prod_{m{:}A}\prod_{n{:}A}\prod_{p{:}\Id_A(m,n)}\Id_{\Id_A(m,n)}(\trans_A(m)(m)(n)(\refl_A(m))(p), p)
+      \]
+
+    \item
+      \textbf{Associativity.}
+      ``$(p \concat q) \concat r = p \concat (q \concat r)$''.
+      \begin{multline*}
+        \textstyle
+        \prod_{l{:}A}\prod_{m{:}A}\prod_{n{:}A}\prod_{o{:}A}\prod_{p{:}\Id_A(l,m)}\prod_{q{:}\Id_A(m,n)}\prod_{r{:}\Id_A(n,o)}
+        \\
+        \Id_{\Id_A(l,o)}(\trans_A(l)(n)(o)(\trans_A(l)(m)(n)(p)(q))(r),
+        \\
+        \trans_A(l)(m)(o)(p)(\trans_A(m)(n)(o)(q)(r)))
+      \end{multline*}
+  \end{itemize}
+\end{task}
+
+\section{Elementary Math}
+
+\subsection{Commutativity of Addition}
+
+Assume that our implementation of $+$ has the following computational behaviors:
+\begin{itemize}
+  \item $\zero + b \jdeq b$.
+  \item $\suc(a) + b \jdeq \suc(a + b)$.
+\end{itemize}
+
+\begin{task}
+  Write code of type $\prod_a a + \zero =_\nat a$ (and probably name it).
+\end{task}
+\begin{task}
+  Write code of type $\prod_a \prod_b a + \suc(b) =_\nat \suc(a + b)$ (and name it).
+\end{task}
+\begin{task}
+  Finally, write code of type $\prod_a \prod_b a + b =_\nat b + a$
+  which uses the previous two tasks as subroutines.
+\end{task}
+
+\subsection{Injectivity of Successor}
+
+\begin{task}
+  Prove (a.k.a. write code of type)
+  \[
+    \prod_a \prod_b (\suc(a) =_\nat \suc(b)) \to (a =_\nat b).
+  \]
+  \begin{hint}
+    Write a function $f$ such that $f(\suc(a)) \jdeq a$.
+  \end{hint}
+\end{task}
+
+\subsection{Non-degeneracy of Natural Numbers}
+
+\begin{task}
+  Prove $\prod_a (\suc(a) =_\nat \zero) \to \bot$.
+  \begin{hint}
+    Can you come up with a function $f$ and a path $p : a =_\nat b$ such that
+    $f(a) \jdeq \top$ but $f(b) \jdeq \bot$?
+    What can you do with such $f$ and $p$?
+  \end{hint}
+\end{task}
+
+\end{document}

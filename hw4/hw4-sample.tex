@@ -1,0 +1,170 @@
+\documentclass[12pt]{article}
+
+\input{hw4-macros}
+
+\title{\Large\textbf{
+  Homework 4: Second Identity Crisis}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 4/Nov/13\\
+Due: 18/Nov/13
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Application Programming Interface}
+
+Assume
+$\ctx \entails f : A \to B$ and
+$\ctx \entails g : B \to C$.
+
+\begin{task}
+  Implement $\apconcat$ and $\apcomp$.
+  \begin{align*}
+    &\ctx \entails \apconcat : \prod_{l,m,n:A}\prod_{p:l=m}\prod_{q:m=n}\ap_f(p \concat q) = \ap_f(p) \concat \ap_f(q)
+    \\
+    &\ctx \entails \apcomp : \prod_{m,n:A}\prod_{p:m=n}\ap_{g \comp f}(p) = \ap_g(\ap_f(p))
+  \end{align*}
+  You may assume that $\refl(m) \concat p \jdeq p$, $\refl(m)^{-1} \jdeq \refl(m)$,
+  and $\ap_f(\refl(m)) \jdeq \refl(f(m))$.
+  \begin{hint}
+    Make sure that your motives are well-typed
+    as you did for the associativity in Homework~3.
+  \end{hint}
+\end{task}
+
+\section{Paths to Infinity}
+
+Show that
+\[
+  \prod_{x,y:A} \Id_A(x,y) \eqv F(x,y)
+\]
+for some ``explicit'' $F$.
+Recall that the data format of an equivalence is
+$(f,(g,\alpha),(h,\beta))$
+where $\alpha$ is a witness of $g$ being a right-inverse of $f$
+and $\beta$ is of $h$ being a left-inverse.
+
+\subsection{Tops and Bottoms are Dual in Many Ways}
+
+\begin{task}
+  Show that $\prod_{x,y:\top} \Id_\top(x,y) \eqv \top$
+  (where $F(x,y) \defeq \top$).
+  You do not have to justify your code.
+  \begin{hint}
+    What is the $\eta$ rule of $\top$?
+  \end{hint}
+\end{task}
+
+\begin{task}
+  Show that $\prod_{x,y:\bot} \Id_\bot(x,y) \eqv \bot$
+  (where $F(x,y) \defeq \bot$).
+  You do not have to justify your code.
+  \begin{hint}
+    Favonia can answer this with less than 30 characters.
+  \end{hint}
+\end{task}
+
+\subsection{Pathbreaking Techniques}
+
+Assume that $f : C \to D \to E$,
+$p : c_1 =_C c_2$, and $q : d_1 =_D d_2$
+in the current context.
+\[
+  \ap^2_f(p,q) \defeq \ap_{\lambda c.f(c)(d_1)}(p) \concat \ap_{f(c_2)}(q)
+\]
+\begin{task}
+  \label{task:ap2prime}
+  Find another one which is ``symmetric'' to the above implementation,
+  where $q$ comes before $p$ instead of $p$ coming before $q$.
+  (We will refer to this implementation as $\ap'^2_f$.)
+\end{task}
+
+\[
+  \begin{array}{lcl}
+    f &\defeq& \lambda p.\pair{\ap_\fst(p)}{\ap_\snd(p)}
+    \\
+    g &\defeq& \lambda q.\ap^2_{\lambda ab.\pair{a}{b}}(\fst(q),\snd(q))
+    \\
+    h &\defeq& g
+  \end{array}
+\]
+Let's look at the more interesting $\alpha$ of type
+\[
+  \prod_{q : \Id_{A}(\fst(x),\fst(y)) \times \Id_B(\snd(x),\snd(y))} f(g(q)) = q.
+\]
+\begin{task}
+  Implement $\alpha$.
+  You may assume that $\refl(m) \concat p \jdeq p$ and $\ap_f(\refl(m)) \jdeq \refl(f(m))$,
+  as usual.
+  \begin{hint}
+    Generalize the theorem
+    so that you have free endpoints instead of $\fst(x)$ or $\snd(y)$.
+  \end{hint}
+\end{task}
+
+\subsection{The Mysterious Case of Eckmann and Hilton}
+
+\[
+  \prod_{(m{:}A)}\prod_{(p,q{:}\refl_A(m)=\refl_A(m))}p\concat q = q\concat p,
+\]
+
+\begin{task}
+  Assuming $p, q : \refl(m) = \refl(m)$, show that
+  \[
+    \ap^2_{\lambda xy.x\concat y}(p,q) = p \concat q
+  \]
+  with access to the following lemmas.
+  \begin{align*}
+    \apid(p) &: \ap_{\id}(p) = p\\
+    \lemmaone(p) &: \ap_{\lambda x.x\concat\refl(n)}(p) = p
+  \end{align*}
+  \begin{hint}
+    $\lambda x.\refl(n)\concat x \jdeq \id$.
+  \end{hint}
+\end{task}
+
+\begin{bonus}
+  Similarly, show that $\ap'^2_{\lambda xy.x\concat y}(p,q) = q \concat p$.
+\end{bonus}
+
+\begin{task}
+  Prove the Eckmann-Hilton theorem with the following lemma:
+  \[
+    \lemmatwo(f)(p)(q) : \ap^2_f(p,q) = \ap'^2_f(p,q).
+  \]
+\end{task}
+
+\section{Equivalence is an Equivalence}
+
+Please finish the following tasks without using the Univalence Axiom.
+
+\begin{task}
+  \textbf{Reflexivity.} Show that $A \eqv A$ for any $A : \U$.
+\end{task}
+
+\begin{task}
+  \textbf{Symmetry.}
+  Assuming you have the data $(f,(g,\alpha),(h,\beta))$ of type $A \eqv B$, show that $B \eqv A$.
+  You may assume that $\qinv(f)$ with the data $(g',\alpha',\beta')$ is also available,
+  but it is fun to finish this task without using it.
+\end{task}
+
+\begin{task}  
+\textbf{Transitivity.}
+  Assuming you have
+  the data
+  $(f_1,(g_1,\alpha_1),(h_1,\beta_1))$ of type $A \eqv B$
+  and
+  $(f_2,(g_2,\alpha_2),(h_2,\beta_2))$ of type $B \eqv C$
+  at hand,
+  show that $A \eqv C$.
+\end{task}
+
+\end{document}

@@ -1,0 +1,129 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Basic packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{mathtools}
+\usepackage{etoolbox}
+\usepackage{mathpartir}
+\usepackage{verse}
+\usepackage{stmaryrd}
+\usepackage{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem-like environments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}% default
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{task}{Task}
+\newtheorem{bonus}{Bonus Task}
+\newenvironment{hint}{\noindent{\bf (Hint)}}{}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HoTT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newrobustcmd*{\ctx}{\Gamma}
+\newrobustcmd*{\entails}{\vdash}
+\newrobustcmd*{\comp}{\mathbin{\circ}}
+\newrobustcmd*{\jdeq}{\equiv} %%% judgmental equality
+\newrobustcmd*{\defeq}{\vcentcolon\equiv} %%% definition. Sorry I screwed this up.
+\newrobustcmd*{\id}{\mathtt{id}}
+\newrobustcmd*{\dummy}{\underline{\hspace{0.5em}}}
+\newrobustcmd*{\unknown}{\text{--}}
+\mathchardef\mhyphen="2D
+\newrobustcmd*{\blank}{\underline{\hspace{2em}}}
+% Units
+\newrobustcmd*{\triv}{\langle\rangle}
+%\newrobustcmd*{\triv}{\star} -- the star version
+% Bottoms
+\newrobustcmd*{\abort}{\mathtt{abort}}
+% Products
+\newrobustcmd*{\fst}{\mathtt{fst}}
+\newrobustcmd*{\snd}{\mathtt{snd}}
+\newrobustcmd*{\bracket}[1]{\langle #1\rangle} % alternative
+\newrobustcmd*{\pair}[2]{\bracket{#1,#2}}
+\newrobustcmd*{\tuple}[2]{\bracket{#1,#2}} % alternative
+\newrobustcmd*{\tuplepair}[2]{\bracket{#1,#2}} % alternative
+\newrobustcmd*{\triple}[3]{\bracket{#1,#2,#3}}
+\newrobustcmd*{\productlevel}{\mathtt{product\mhyphen level}}
+% Sums
+\newrobustcmd*{\inl}{\mathtt{inl}}
+\newrobustcmd*{\inr}{\mathtt{inr}}
+\newrobustcmd*{\case}{\mathtt{case}}
+\newrobustcmd*{\sigmalevel}{\mathtt{sigma\mhyphen level}}
+% Natural numbers
+\newrobustcmd*{\rec}{\mathtt{rec}}
+\newrobustcmd*{\zero}{\mathtt{zero}}
+\newrobustcmd*{\suc}{\mathtt{suc}}
+\newrobustcmd*{\N}{\mathbb{N}}
+\newrobustcmd*{\nat}{\mathtt{nat}}
+% Identities
+\newrobustcmd*{\Id}{\mathtt{Id}}
+\newrobustcmd*{\refl}{\mathtt{refl}}
+\newrobustcmd*{\J}{\mathsf{J}}
+\newrobustcmd*{\sym}{\mathtt{sym}}
+\newrobustcmd*{\trans}{\mathtt{trans}}
+\newrobustcmd*{\ap}{\mathtt{ap}}
+\newrobustcmd*{\tr}{\mathtt{tr}}
+%%% Path concatenation
+\newrobustcmd*{\concat}{%
+  \mathchoice{\mathbin{\raisebox{0.5ex}{$\displaystyle\centerdot$}}}%
+  {\mathbin{\raisebox{0.5ex}{$\centerdot$}}}%
+  {\mathbin{\raisebox{0.25ex}{$\scriptstyle\,\centerdot\,$}}}%
+  {\mathbin{\raisebox{0.1ex}{$\scriptscriptstyle\,\centerdot\,$}}}
+}
+% Universes
+\newrobustcmd*{\U}{\mathcal{U}}
+\newrobustcmd*{\ua}{\mathtt{ua}}
+\newrobustcmd*{\uaequiv}{\mathtt{ua\mhyphen equiv}}
+% Functional Extensionality
+\newrobustcmd*{\funext}{\mathtt{funext}}
+\newrobustcmd*{\happly}{\mathtt{happly}}
+% Equivalences
+\newrobustcmd*{\eqv}{\simeq} % from HoTT-book
+\newrobustcmd*{\qinv}{\mathsf{qinv}}
+\newrobustcmd*{\isequiv}{\mathsf{isEquiv}}
+\newrobustcmd*{\ecomp}{\mathbin{\comp_\eqv}}
+\newrobustcmd*{\equivinv}{\mathtt{equiv\mhyphen inv}}
+\newrobustcmd*{\equivcompose}{\mathtt{equiv\mhyphen compose}}
+\newrobustcmd*{\equiviscontr}{\mathtt{equiv\mhyphen is\mhyphen contr}}
+\newrobustcmd*{\equivlevel}{\mathtt{equiv\mhyphen level}}
+\newrobustcmd*{\equivpreserveslevel}{\mathtt{equiv\mhyphen preserves\mhyphen level}}
+\newrobustcmd*{\isequivisprop}{\mathtt{is\mhyphen equiv\mhyphen is\mhyphen prop}}
+% N-types
+\newrobustcmd*{\tlevel}{\mathtt{tlevel}} % 't' for truncation
+\newrobustcmd*{\trec}{\rec_\tlevel} % 't' for truncation
+\newrobustcmd*{\trunc}[1]{\left\|#1\right\|}
+\newrobustcmd*{\squash}{\mathtt{squash}}
+\newrobustcmd*{\truncproj}[1]{\left|#1\right|}
+\newrobustcmd*{\truncelim}{\mathtt{elim}_\mathtt{trunc}}
+\newrobustcmd*{\isContr}{\mathtt{isContr}}
+\newrobustcmd*{\iscontr}{\mathtt{isContr}}
+\newrobustcmd*{\isProp}{\mathtt{isProp}}
+\newrobustcmd*{\isprop}{\mathtt{isProp}}
+\newrobustcmd*{\isSet}{\mathtt{isSet}}
+\newrobustcmd*{\isset}{\mathtt{isSet}}
+\newrobustcmd*{\istype}[1]{\mathtt{is}\mhyphen#1\mhyphen\mathtt{type}}
+\newrobustcmd*{\propisset}{\mathtt{prop\mhyphen is\mhyphen set}}
+\newrobustcmd*{\contrequiv}{\mathtt{contr\mhyphen equiv}}
+\newrobustcmd*{\proplevel}{\mathtt{prop\mhyphen level}}
+\newrobustcmd*{\contrisprop}{\mathtt{contr\mhyphen is\mhyphen prop}}
+\newrobustcmd*{\raisecontr}{\mathtt{raise\mhyphen contr}}
+\newrobustcmd*{\raiselevel}{\mathtt{raise\mhyphen level}}
+\newrobustcmd*{\prophaslevelsuc}{\mathtt{prop\mhyphen has\mhyphen level\mhyphen\suc}}
+\newrobustcmd*{\istypeisprop}{\mathtt{is\mhyphen type\mhyphen is\mhyphen prop}}
+\newrobustcmd*{\ntypepathequiv}{\mathtt{ntype\mhyphen path\mhyphen equiv}}
+% Subtypes
+\newrobustcmd*{\subtypepath}{\mathtt{subtype\mhyphen path}}
+\newrobustcmd*{\subtypepatheqiv}{\mathtt{subtype\mhyphen path\mhyphen equiv}}
+\newrobustcmd*{\subtypelevel}{\mathtt{subtype\mhyphen level}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Equational Reasoning
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newrobustcmd*{\reason}[1]{=\hspace{-0.5em}\langle\hspace{0.2em} #1 \hspace{0.2em}\rangle}

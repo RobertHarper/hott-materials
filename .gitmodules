@@ -1,0 +1,3 @@
+[submodule "hott-notes"]
+	path = notes
+	url = git@github.com:favonia/hott-notes.git

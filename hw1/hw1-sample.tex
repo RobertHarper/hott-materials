@@ -1,0 +1,90 @@
+\documentclass[12pt]{article}
+
+\input{hw1-macros}
+\usepackage{palatino}
+
+\title{\Large\textbf{
+  Homework 1: Heyting Algebra and IPL}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 19/Sep/13\\
+Due: 3/Oct/13
+}
+
+\begin{document}
+
+\maketitle
+
+This is 15-819's first homework assignment!
+
+\section{Heyting Meets Boole}
+
+\begin{task}
+  Show that $A \meet (B \join C) \leq (A \meet B) \join (A \meet C)$
+  in any Heyting algebra.
+
+  \begin{hint}
+    You might find Yoneda's Lemma useful, which says (in this particular context)
+    $A \leq B$ iff for all $C$, $B \leq C$ implies $A \leq C$.
+    There is a short proof with Yoneda's, and another short proof without.
+  \end{hint}
+\end{task}
+
+\begin{task}
+  Show that in any Heyting algebra,
+  $A \exp \init$ is one of the largest elements inconsistent with $A$,
+  and is equivalent to any largest inconsistent one.
+\end{task}
+
+\begin{task}
+  Show that in any Boolean algebra (complemented distributive lattice),
+  $\comp A \join B$ is a valid implementation of $A \exp B$.
+  That is, it satisfies all properties of $A \exp B$.
+\end{task}
+
+\section{IPL Structural Engineering}
+
+\begin{task}
+  Show that IPL is transitive, which is to say
+  \[
+    \infer{
+      \ctx, \ctx' \entails P \true
+      \\
+      \ctx, P \true, \ctx' \entails Q \true
+    }{
+      \ctx, \ctx' \entails Q \true
+    }
+  \]
+  is admissible.
+  You only have to consider the case that the last rule applied in the right sub-derivation
+  (of $\ctx, P \true, \ctx' \entails Q \true$)
+  is either the primitive reflexivity or rules in the negative fragment.
+  You may assume weakening and exchange as admissible rules.
+\end{task}
+
+\section{Semantical Analysis of IPL}
+
+\begin{task}
+  Show that for any Heyting algebra and any evaluation function on atoms,
+  if $\ctx \entails P \true$ then $\ctx^+ \leq P^*$.
+  You only have to consider the cases in which the last rule applied is ($\imp$I) or ($\imp$E).
+\end{task}
+
+\begin{task}
+  Consider the Lindenbaum algebra of IPL where
+  the elements are all propositions in IPL
+  (with the translation $(\text{--})^*$ being the identity function)
+  and the relationship $\leq$ is defined by provability in IPL.%
+  \footnote{To simplify the problem, we avoid taking quotients by interprovability,
+  but one must consider that if a partial order is desired.}
+  That is, $A \leq B$ iff $A \true \entails B \true$.
+  Show that this is a Heyting algebra.
+  You only have to prove the transitivity.
+  You may assume weakening and exchange of IPL, or cite previous tasks as lemmas.
+\end{task}
+
+\end{document}

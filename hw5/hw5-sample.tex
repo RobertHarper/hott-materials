@@ -1,0 +1,223 @@
+\documentclass[12pt]{article}
+
+\input{hw5-macros}
+
+\title{\Large\textbf{
+  Homework 5: Leap of Truncation}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 19/Nov/13\\
+Due: 4/Dec/13
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Blah, Blah, Blah (a.k.a. Introduction)}
+
+\begin{definition}
+  The
+  \emph{universe of $n$-types}
+  is
+  $\displaystyle \U^n \defeq \sum_{A:\U} \istype{n}(A)$.%
+  \footnote{$\U_i$ is used for the universe level so I have to find another corner. Sorry.}
+\end{definition}
+
+\begin{theorem}
+  $\displaystyle \prod_{n:\tlevel} \istype{\suc(n)}(\U^n)$.
+\end{theorem}
+
+\section{Cumulativeness}
+
+You may assume the following lemma that was proved in class.
+\[
+  \displaystyle \propisset : \prod_{A:\U} \isprop(A) \to \isset(A)
+\]
+
+\begin{task}
+  $\displaystyle
+    \proplevel : \prod_{A : \U} \isprop(A) \to \istype{(-1)}(A)
+  $
+\end{task}
+
+\begin{task}
+  $\displaystyle
+    \contrisprop : \prod_{A : \U} \iscontr(A) \to \isprop(A).
+  $
+\end{task}
+
+\begin{task}
+  $\displaystyle
+    \raiselevel :
+    \prod_{(A:\U)}
+    \prod_{(n:\tlevel)}
+    \istype{n}(A) \to \istype{\suc(n)}(A)
+  $
+\end{task}
+
+\begin{task}
+  $\displaystyle
+    \prophaslevelsuc :
+    \prod_{(A:\U)}
+    \prod_{(n:\tlevel)}
+    \isprop(A) \to \istype{\suc(n)}(A)
+  $
+\end{task}
+
+\section{Equivalences}
+
+You may assume these lemmas:
+\begin{itemize}
+  \item
+    Suppose $f, g: \prod_{x:A} B(x)$ for some $A : \U$ and $B : A \to \U$.
+    \[
+      \funext : \left(\prod_{x:A} f\,x = g\,x \right) \to (f = g)
+    \]
+    You do not have to write out implicit arguments $A$, $B$, $f$ and $g$.
+  \item
+    Suppose $A, B, C : \U$.
+    \begin{gather*}
+      \equivinv : A \eqv B \to B \eqv A
+      \\
+      \equivcompose : (B \eqv C) \to (A \eqv B) \to (A \eqv C)
+      \\
+      \isequivisprop : \prod_{f:A\to B}\isprop(\isequiv(f))
+    \end{gather*}
+    Note that $\equivcompose$ is in the function composition order,
+    which can also be written as $e_1 \ecomp e_2$.
+  \item
+    Suppose $A : \U$, $B : A \to \U$ and $n : \tlevel$.
+    \[
+      \productlevel :
+      \left(\prod_{x:A}\istype{n}(B(x))\right) \to \istype{n}\left(\prod_{x:A}B(x)\right)
+    \]
+    \begin{multline*}
+      \sigmalevel :
+      \istype{n}(A)
+      \to
+      \left(\prod_{x:A}\istype{n}(B(x))\right)
+      \\
+      \to
+      \istype{n}\left(\sum_{x:A}B(x)\right)
+    \end{multline*}
+  \item
+    Suppose $A : \U$ and $B : A \to \U$.
+    \begin{gather*}
+      \subtypepath :
+      \left(\prod_{x{:}A} \isprop(B(x))\right)
+      \to
+      \prod_{m,n:\sum_{x:A}B(x)}
+      (\fst(m)=\fst(n))
+      \to
+      (m = n)
+      \\
+      \subtypepatheqiv :
+      \left(\prod_{x{:}A} \isprop(B(x))\right)
+      \to
+      \prod_{m,n:\sum_{x:A}B(x)}
+      (\fst(m)=\fst(n))
+      \eqv
+      (m = n)
+    \end{gather*}
+\end{itemize}
+
+\subsection{The Special Case}
+
+\begin{task}
+  $\displaystyle
+    \contrequiv :
+    \prod_{A,B:\U}
+    \iscontr(A) \to
+    \iscontr(B) \to
+    (A \eqv B)
+  $
+\end{task}
+\begin{task} Implement
+  \[
+    \equiviscontr :
+    \prod_{A,B:\U}
+    \iscontr(A) \to \iscontr(B) \to \iscontr(A \eqv B)
+  \]
+\end{task}
+
+\subsection{Other Cases}
+
+\begin{task} Implement
+  \begin{multline*}
+    \subtypelevel :
+    \prod_{(A:\U)}
+    \prod_{(B:A\to\U)}
+    \prod_{(n:\tlevel)}
+    \istype{\suc(n)}(A)
+    \to
+    \left(\prod_{x:A} \isprop(B(x))\right)
+    \\
+    \to
+    \istype{\suc(n)}\left(\sum_{x:A}B(x)\right)
+  \end{multline*}
+\end{task}
+
+\begin{bonus}
+  Find a counterexample of the above task if $\istype{\suc(n)}$ was $\istype{n}$.
+  That is, find $A$ and $B$ such that $\iscontr(A)$ but $\neg \iscontr(\sum_{x:A}B(x))$.
+\end{bonus}
+
+\begin{task} Implement
+  \[
+    \equivlevel :
+    \prod_{(A,B:\U)}
+    \prod_{(n:\tlevel)}
+    \istype{n}(A) \to \istype{n}(B) \to \istype{n}(A \eqv B)
+  \]
+\end{task}
+
+\section{Universes}
+
+\begin{itemize}
+  \item $\istype{n}(A)$ is also a proposition.
+    \[
+      \istypeisprop :
+      \prod_{(n:\tlevel)}
+      \prod_{(A:\U)}
+      \isprop(\istype{n}(A))
+    \]
+  \item
+    Suppose $A, B : \U$.
+    \begin{gather*}
+      \ua : A \eqv B \to A =_\U B
+      \\
+      \uaequiv : (A \eqv B) \eqv (A =_\U B)
+    \end{gather*}
+\end{itemize}
+
+\subsection{Real Work}
+
+\begin{task} Implement
+  \[
+    \equivpreserveslevel :
+    \prod_{(A,B:\U)}
+    \prod_{(n:\tlevel)}
+    (A \eqv B) \to \istype{n}(A) \to \istype{n}(B)
+  \]
+\end{task}
+
+\begin{task} Implement
+  \[
+    \ntypepathequiv :
+    \prod_{(n:\tlevel)}
+    \prod_{(A,B:\U^n)}
+    (\fst(A) =_\U \fst (B))
+    \eqv
+    (A =_{\U^n} B)
+  \]
+\end{task}
+
+\begin{task}
+  Show the ultimate theorem and finish this assignment.
+\end{task}
+\end{document}

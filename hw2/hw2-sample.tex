@@ -1,0 +1,166 @@
+\documentclass[12pt]{article}
+
+\input{hw2-macros}
+
+% I don't think everyone likes this font.
+%\usepackage{palatino}
+
+\title{\Large\textbf{
+  Homework 2: Kindom of Kittens}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 5/Oct/13\\
+Due: 19/Oct/13
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Categorical Considerations}
+
+\subsection{Structural Safety}
+
+\begin{task}\label{task:struct}
+  Write down a suitable morphism in terms of the primitive constructs
+  and the morphisms immediately available in each subtask.
+  The primitive constructs include
+  $\id$, $f \comp g$, $\pair{f}{g}$, $\fst$, $\snd$, $\inl$, $\inr$, $\copair{f}{g}$, $\lambda(f)$ and $\ap$.
+  \begin{itemize}
+    \item
+      \textbf{Reflexivity}.
+
+      Write down a morphism from $\Gamma^+ \times P^*$ to $P^*$.
+    \item
+      \textbf{Contraction}.
+
+      Write down a morphism from $\Gamma^+ \times P^*$ to $Q^*$
+      in terms of a morphism
+      $f : (\Gamma^+ \times P^*) \times P^* \to Q^*$.
+    \item
+      \textbf{Weakening}.
+
+      Write down a morphism from $\Gamma^+ \times P^*$ to $Q^*$
+      in terms of a morphism
+      $f : \Gamma^+ \to Q^*$.
+    \item
+      \textbf{Exchange}.
+
+      Write down a morphism from
+      $(\Gamma^+ \times Q^*) \times P^*$ to $R^*$
+      in terms of a morphism
+      $f : (\Gamma^+ \times P^*) \times Q^* \to R^*$.
+    \item
+      \textbf{Substitution}.
+
+      Write down a morphism from $\Gamma^+$ to $Q^*$ in terms of
+      two morphisms
+      $f : \Gamma^+ \to P^*$
+      and
+      $g : \Gamma^+ \times P^* \to Q^*$.
+  \end{itemize}
+\end{task}
+
+\subsection{Utility of Universality}
+
+\begin{task}
+  Show these rules via universal properties:
+  \begin{itemize}
+    \item $\pair{f}{g} \comp h = \pair{f\comp h}{g\comp h}$
+    \item $h \comp \copair{f}{g} = \copair{h\comp f}{h\comp g}$
+  \end{itemize}
+\end{task}
+
+\begin{task}
+  Show that $\beta$ and $\eta$ rules of implications (function types)
+  are justified by the universal property of exponentials.
+  You may assume the translation of judgments $\sem{\text{--}}$
+  satisfies the following properties:
+  \begin{itemize}
+    \item $\sem{\Gamma \entails \lambda x.M_1 : P \to Q}
+      = \lambda (\sem{\Gamma, x{:}P \entails M_1 : Q})$
+    \item $\sem{\Gamma \entails M_1\,M_2 : Q}
+      = \ap \comp \pair{\sem{\Gamma \entails M_1 : P \to Q}}{\sem{\Gamma \entails M_2 : P}}$
+    \item
+      $\sem{\Gamma, x{:}P \entails x : P}$ gives the same morphism
+      as you did in Task~\ref{task:struct} for reflexivity.
+    \item
+      $\sem{\Gamma, x{:}P \entails M : Q}$ also gives the same morphism
+      in terms of $\sem{\Gamma \entails M : Q}$
+      as you did in Task~\ref{task:struct} for weakening.
+    \item
+      Fortunately,%
+      \footnote{These are all provable theorems for a suitable, systematic translation.}
+      $\sem{\Gamma \entails [M_2/x]M_1 : Q}$ gives the same morphism
+      in terms of $\sem{\Gamma, x{:}P \entails M_1 : Q}$ and $\sem{\Gamma \entails M_2 : P}$
+      as you did in Task~\ref{task:struct} for substitution.
+  \end{itemize}
+  You may freely assume previous tasks, as usual.
+\end{task}
+
+\section{Commuting Conversion}
+
+\begin{bonus}
+  There is a short proof of
+  $[M_1/x]N \defeq [M_2/x]N$ when $M_1 \defeq M_2$
+  directly from suitable $\beta\eta$ rules and congruence.
+  Try to find it!
+\end{bonus}
+
+\begin{task}
+  Check that
+  \[
+    M \defeq \case(z;x.[\inl(x)/z]M;y.[\inr(y)/z]M)
+  \]
+  is derivable from
+  \begin{itemize}
+    \item $z \defeq \case(z;x.\inl(x);y.\inr(y))$ and
+    \item
+      $[\case(z;x.\inl(x);y.\inr(y))/z]M \equiv \case(z;x.[\inl(x)/z]M;y.[\inr(y)/z]M)$.
+      
+      (This is called commuting conversion.)
+  \end{itemize}
+  You may assume $[z/z]M \defeq M$ and previous tasks.
+\end{task}
+
+\section{Narratives of Natural Numbers}
+
+\subsection{Summary in Sum}
+
+Recall the alternative definition of natural number objects
+through this diagram:
+\[
+  \xymatrixcolsep{5pc}
+  \xymatrix{
+    1 + \mathbb{N} \ar@{.>}[r]_{\id + \rec_{f,g}} \ar[d]_{\copair{\zero}{\suc}}
+    & 1 + A \ar[d]^{\copair{f}{g}}
+    \\
+    \mathbb{N} \ar@{.>}[r]_{!\,\rec_{f,g}} & A
+  }
+\]
+\begin{task}
+  Check that this diagram indeed defines a natural number object
+  (in the sense described in class).
+\end{task}
+
+\subsection{Recursors Redefined}
+
+Here is the formal specification:
+\begin{itemize}
+  \item $\altrec(P; x.y.Q)(\zero) \defeq P$
+  \item For any closed term $\emptyset \entails M : \nat$,\\
+    $\altrec(P; x.y.Q)(\suc(M)) \defeq [M,\altrec(P;x.y.Q)(M)/x,y]Q$
+\end{itemize}
+Note that $Q$ has access to the \emph{predecessor} of the argument,
+not the argument itself.
+
+\begin{task}
+  Define $\altrec$ in terms of $\rec$.
+  You do not have to show the correctness.
+\end{task}
+
+\end{document}

@@ -1,0 +1,458 @@
+\documentclass[12pt]{article}
+
+\input{hw5-macros}
+
+\usepackage{palatino}
+\usepackage{mdframed}
+\usepackage[usenames,svgnames]{xcolor}
+\newcommand{\cut}[1]{}
+\def\StripPrefix#1>{}
+\def\jobis#1{FF\fi
+  \def\predicate{#1}%
+  \edef\predicate{\expandafter\StripPrefix\meaning\predicate}%
+  \edef\job{\jobname}%
+  \ifx\job\predicate
+}
+\if\jobis{hw5-solution}%
+  \newcommand{\marksolution}[1]{\color{FireBrick}#1\normalcolor}%
+\else%
+  \newcommand{\marksolution}[1]{\cut{#1}}%
+\fi
+\theoremstyle{plain}
+\newtheorem*{solution}{Solution}
+\newrobustcmd{\markextra}[1]{\color{DarkOliveGreen}#1\normalcolor}
+\mdfdefinestyle{extra}{linecolor=DarkOliveGreen,fontcolor=DarkOliveGreen}
+
+\title{\Large\textbf{
+  Homework 5: Leap of Truncation}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 19/Nov/13\\
+Due: 4/Dec/13
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Blah, Blah, Blah (a.k.a. Introduction)}
+
+Alright. So, the goal of this assignment is to show that
+the universe of $n$-types is itself an $(n{+}1)$-type.
+Every task in this assignment is a part of the proof of this theorem.
+Let us begin right away with the definition of \emph{universes of $n$-types}:
+\begin{definition}
+  The
+  \emph{universe of $n$-types}
+  is
+  $\displaystyle \U^n \defeq \sum_{A:\U} \istype{n}(A)$.%
+  \footnote{$\U_i$ is used for the universe level so I have to find another corner. Sorry.}
+\end{definition}
+
+To formally talk about the $n$, the \emph{truncation level},
+let us have a separate data type, $\tlevel$,
+which is isomorphic to $\nat$ but starts with $-2$.
+We write $\trec$ as the recursor,
+and reuse $\suc$ as the successor constructor.
+For example, the $(n{+}1)$ is really $\suc(n)$ in the formal statement,
+and $-1$ is really $\suc(-2)$.
+Anyway, here is the theorem:
+\begin{theorem}
+  $\displaystyle \prod_{n:\tlevel} \istype{\suc(n)}(\U^n)$.
+\end{theorem}
+
+The key insight is that
+the type of equivalences between two $n$-types
+is itself an $n$-type.
+By univalence,
+it means that the type of paths between two $n$-types
+is also an $n$-type.
+The intuition behind the key insight is that
+equivalences are maps with special properties,
+and the structure of parallel maps are, to some degree,
+limited by that of the codomoin in the presence of functional extensionality.
+You will fill in the missing details in your solution.
+
+As a side note,
+this theorem is actually tight for $n \geq -1$, in the sense that
+$\U^n$ is not a $n$-type for $n \geq -1$.%
+\footnote{It has been known that $\U^{-1}$ is not a $(-1)$-type (i.e., not a proposition)
+  and $\U^0$ is not a $0$-type (i.e. not a set) for a while,
+  and Nicolai Kraus and Christian Sattler generalized this to $n\geq -1$
+  without using higher inductive types.}
+We will not cover this result in this assignment.
+\markextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Clarification}: The bound was $n \geq 0$ but it works for $n = -1$ too.
+  \end{mdframed}
+}
+
+To make programming easier, you are allowed to use pattern matching
+for $\Sigma$ types in $\lambda$.
+The dedicated syntax $\lambda \pair{x}{y}.M$
+means $\lambda p.[\fst(p),\snd(p)/x,y]M$
+for some fresh variable $p \notin M$.
+
+\section{Cumulativeness}
+
+In this section
+we will show that the truncation hierarchy is cumulative,
+along with some other useful lemmas.
+You may assume the following lemma that was proved in class.
+\[
+  \displaystyle \propisset : \prod_{A:\U} \isprop(A) \to \isset(A)
+\]
+As usual, you do not have to justify your code.
+
+\begin{task}
+  $\displaystyle
+    \proplevel : \prod_{A : \U} \isprop(A) \to \istype{(-1)}(A)
+  $
+\end{task}
+\marksolution{
+\begin{solution}
+  $
+    \lambda A \alpha x y.\pair{\alpha(x)(y)}{\propisset(A)(\alpha)(x)(y)(\alpha(x)(y))}
+  $
+\end{solution}
+}
+
+\begin{task}
+  $\displaystyle
+    \contrisprop : \prod_{A : \U} \iscontr(A) \to \isprop(A).
+  $
+\end{task}
+\marksolution{
+\begin{solution}
+  $
+    \lambda A\tuple{a}{\alpha} x y.\alpha(x)^{-1} \concat \alpha(y)
+  $
+\end{solution}
+}
+
+\begin{task}
+  $\displaystyle
+    \raiselevel :
+    \prod_{(A:\U)}
+    \prod_{(n:\tlevel)}
+    \istype{n}(A) \to \istype{\suc(n)}(A)
+  $
+\end{task}
+\marksolution{
+\begin{solution}
+  \begin{multline*}
+    \lambda An.\trec[n.\prod_{A:\U}\istype{n}(A) \to \istype{\suc(n)}(A)]\\
+    (n,\lambda A.\proplevel(A) \comp \contrisprop(A),n.f.\lambda A\alpha xy.f(x=y)(\alpha(x)(y)))(A)
+  \end{multline*}
+  (Note that to be fully consistent with the lecture notes, $\trec$ should be $\mathtt{ind}_\mathtt{level}$.)
+\end{solution}
+}
+
+\begin{task}
+  $\displaystyle
+  \prophaslevelsuc :
+  \prod_{(A:\U)}
+  \prod_{(n:\tlevel)}
+  \isprop(A) \to \istype{\suc(n)}(A)
+  $
+\end{task}
+\marksolution{
+  \begin{solution}
+    \begin{multline*}
+      \lambda An\alpha.\trec[n.\istype{\suc(n)}(A)]\\
+      (n,\proplevel(A)(\alpha),n.\beta.\raiselevel(A)(\suc(n))(\beta))
+    \end{multline*}
+    (Note that to be fully consistent with the lecture notes, $\trec$ should be $\mathtt{ind}_\mathtt{level}$.)
+  \end{solution}
+}
+
+\section{Equivalences}
+
+This section is to show the ``key insight'',
+i.e., that the type of equivalences between $n$-types is an $n$-type.
+\[
+  \prod_{(A,B:\U)}
+  \prod_{(n:\tlevel)}
+  \istype{n}(A) \to \istype{n}(B) \to \istype{n}(A \eqv B)
+\]
+
+The strategy is to exploit the fact that $\isequiv(f)$ is a proposition.
+In general we call $\sum_{x:A} B(x)$ a \emph{subtype} of $A$
+when $\prod_{x:A} \isprop(B(x))$.
+The idea is that the truncation level of a subtype
+should be bounded by that of its original type.
+This is true except one special case mentioned below.
+In the case of equivalences, this means that
+you can disregard the second component $\isequiv(f)$
+and only focus on the function $f$.
+Moreover, we know the truncation level of the function type is bounded by
+that of the codomain, and hence complete the proof.
+Unfortunately this strategy can fail when $A$ is contractible,
+because a subtype of a contractible type might not be contractible.
+To address, we will handle the case $n = -2$ separately.
+You may assume these lemmas:
+\begin{itemize}
+  \item Some facts derived from the function extensionality.
+    Suppose $f, g: \prod_{x:A} B(x)$ for some $A : \U$ and $B : A \to \U$.
+    \[
+      \funext : \left(\prod_{x:A} f\,x = g\,x \right) \to (f = g)
+    \]
+    You do not have to write out implicit arguments $A$, $B$, $f$ and $g$.
+  \item Some operations of $\isequiv(f)$ so that its implementation becomes irrelevant.
+    Suppose $A, B, C : \U$.
+    \begin{gather*}
+      \equivinv : A \eqv B \to B \eqv A
+      \\
+      \equivcompose : (B \eqv C) \to (A \eqv B) \to (A \eqv C)
+      \\
+      \isequivisprop : \prod_{f:A\to B}\isprop(\isequiv(f))
+    \end{gather*}
+    Note that $\equivcompose$ is in the function composition order,
+    which can also be written as $e_1 \ecomp e_2$,
+    mimicking the function composition $f \comp g$.
+    You do not have to write out implicit arguments $A$, $B$ and $C$.
+  \item Truncation levels are closed under $\prod$ and $\sum$ formations.
+    Suppose $A : \U$, $B : A \to \U$ and $n : \tlevel$.
+    \[
+      \productlevel :
+      \left(\prod_{x:A}\istype{n}(B(x))\right) \to \istype{n}\left(\prod_{x:A}B(x)\right)
+    \]
+    \begin{multline*}
+      \sigmalevel :
+      \istype{n}(A)
+      \to
+      \left(\prod_{x:A}\istype{n}(B(x))\right)
+      \\
+      \to
+      \istype{n}\left(\sum_{x:A}B(x)\right)
+    \end{multline*}
+    You do not have to write out implicit arguments $A$, $B$ and $n$.
+  \item Finally, you may disregard the second component while handling paths in subtypes.
+    Suppose $A : \U$ and $B : A \to \U$.
+    \begin{gather*}
+      \subtypepath :
+      \left(\prod_{x{:}A} \isprop(B(x))\right)
+      \to
+      \prod_{m,n:\sum_{x:A}B(x)}
+      (\fst(m)=\fst(n))
+      \to
+      (m = n)
+      \\
+      \subtypepatheqiv :
+      \left(\prod_{x{:}A} \isprop(B(x))\right)
+      \to
+      \prod_{m,n:\sum_{x:A}B(x)}
+      (\fst(m)=\fst(n))
+      \eqv
+      (m = n)
+    \end{gather*}
+    Again, you do not have to write out implicit arguments $A$ and $B$.
+\end{itemize}
+
+\subsection{The Special Case}
+
+Let us begin with the special case $n = -2$.
+\begin{task}
+  $\displaystyle
+  \contrequiv :
+  \prod_{A,B:\U}
+  \iscontr(A) \to
+  \iscontr(B) \to
+  (A \eqv B)
+  $
+\end{task}
+\markextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Erratum}: There was a typo that $B : A \to \U$. It should be $B : \U$.
+  \end{mdframed}
+}
+\marksolution{
+  \begin{solution}
+    $
+    \lambda AB\pair{a}{\alpha} \pair{b}{\beta}.\triple{\lambda\dummy.b}{
+      \pair{\lambda\dummy.a}{\beta}
+    }{
+      \pair{\lambda\dummy.a}{\alpha}
+    }
+    $
+  \end{solution}
+}
+\begin{task} Implement
+  \[
+    \equiviscontr :
+    \prod_{A,B:\U}
+    \iscontr(A) \to \iscontr(B) \to \iscontr(A \eqv B)
+  \]
+  Warning: this can be mind-blowing.
+  \begin{hint}
+    Bob has office hours.
+  \end{hint}
+\end{task}
+\marksolution{
+  \begin{solution}
+    \begin{multline*}
+      \lambda AB\alpha\beta.\pair{
+        \contrequiv(A)(B)(\alpha)(\beta)
+      }{
+        \lambda \gamma.\subtypepath(\isequivisprop)
+        \\
+        (\contrequiv(A)(B)(\alpha)(\beta))
+      (\gamma)(\funext(\lambda a.\snd(\beta)(\fst(\gamma)(a)))}
+    \end{multline*}
+  \end{solution}
+}
+
+\subsection{Other Cases}
+
+Now let us consider the cases $n \geq -1$.
+The strategy outlined in the beginning of the section critically depends on the following lemma.
+\begin{task} Implement
+  \begin{multline*}
+    \subtypelevel :
+    \prod_{(A:\U)}
+    \prod_{(B:A\to\U)}
+    \prod_{(n:\tlevel)}
+    \istype{\suc(n)}(A)
+    \to
+    \left(\prod_{x:A} \isprop(B(x))\right)
+    \\
+    \to
+    \istype{\suc(n)}\left(\sum_{x:A}B(x)\right)
+  \end{multline*}
+\end{task}
+\marksolution{
+  \begin{solution}
+    \begin{multline*}
+      \lambda A B n \alpha \beta.\sigmalevel(\alpha)(\lambda x.\prophaslevelsuc(B(x))(n)(\beta(x)))
+    \end{multline*}
+  \end{solution}
+}
+
+\begin{bonus}
+  Find a counterexample of the above task if $\istype{\suc(n)}$ was $\istype{n}$.
+  That is, find $A$ and $B$ such that $\iscontr(A)$ but $\neg \iscontr(\sum_{x:A}B(x))$.
+\end{bonus}
+\marksolution{
+  \begin{solution}
+    Let $A = \top$ and $B = \lambda\dummy.\bot$.
+    We have
+    \[
+      \tuple{\triv}{\lambda\dummy.\refl(\triv)}:\iscontr(A)
+    \]
+    and
+    \[
+      \textstyle
+      \snd \comp \fst : \iscontr\left(\sum_{x:A}B(x)\right) \to \bot
+    \]
+  \end{solution}
+}
+
+Finally the theorem of this section.
+\begin{task} Implement
+  \[
+    \equivlevel :
+    \prod_{(A,B:\U)}
+    \prod_{(n:\tlevel)}
+    \istype{n}(A) \to \istype{n}(B) \to \istype{n}(A \eqv B)
+  \]
+\end{task}
+\marksolution{
+  \begin{solution}
+    \begin{multline*}
+      \lambda ABn.\trec[
+        n.\istype{n}(A) \to \istype{n}(B) \to \istype{n}(A \eqv B)
+      ]
+      \\
+      (n,\equiviscontr(A)(B),n.\dummy.\lambda\dummy\beta.
+      \subtypelevel(A\to B)(\isequiv)(n)
+      \\
+      (\productlevel(\lambda\dummy.\beta))(\isequivisprop))
+    \end{multline*}
+    (Note that to be fully consistent with the lecture notes, $\trec$ should be $\mathtt{ind}_\mathtt{level}$.)
+  \end{solution}
+}
+
+\section{Universes}
+
+We are reaching the ultimate goal.
+Feel free to use any lemma or task in previous sections, in addition to these:
+\begin{itemize}
+  \item $\istype{n}(A)$ is also a proposition.
+    \[
+      \istypeisprop :
+      \prod_{(n:\tlevel)}
+      \prod_{(A:\U)}
+      \isprop(\istype{n}(A))
+    \]
+  \item
+    Some facts derived from the univalence axiom.
+    Suppose $A, B : \U$.
+    \begin{gather*}
+      \ua : A \eqv B \to A =_\U B
+      \\
+      \uaequiv : (A \eqv B) \eqv (A =_\U B)
+    \end{gather*}
+    As usual, you do not have to write out implicit arguments $A$ and $B$.
+\end{itemize}
+
+\subsection{Real Work}
+
+\begin{task}
+  Everything respects equivalences, thanks to the univalence axiom.
+  \[
+    \equivpreserveslevel :
+    \prod_{(A,B:\U)}
+    \prod_{(n:\tlevel)}
+    (A \eqv B) \to \istype{n}(A) \to \istype{n}(B)
+  \]
+\end{task}
+\marksolution{
+  \begin{solution}
+    $
+    \lambda A B n e\alpha . \tr[x.\istype{n}(x)](\ua(e))(\alpha)
+    $
+  \end{solution}
+}
+
+
+\begin{task} Implement
+  \[
+    \ntypepathequiv :
+    \prod_{(n:\tlevel)}
+    \prod_{(A,B:\U^n)}
+    (\fst(A) =_\U \fst (B))
+    \eqv
+    (A =_{\U^n} B)
+  \]
+  \begin{hint}
+    The lemma name is suggestive. Maybe too suggestive.
+  \end{hint}
+\end{task}
+\marksolution{
+  \begin{solution}
+    $
+    \lambda n. \subtypepatheqiv(\istypeisprop(n))
+    $
+  \end{solution}
+}
+
+\begin{task}
+  Show the ultimate theorem and finish this assignment.
+\end{task}
+\marksolution{
+  \begin{solution}
+    \begin{multline*}
+      \lambda n\pair{A}{\alpha}\pair{B}{\beta}.
+      \equivpreserveslevel(A\eqv B)(\pair{A}{\alpha}=\pair{B}{\beta})(n)
+      \\
+      (\ntypepathequiv(n)(\pair{A}{\alpha})(\pair{B}{\beta}) \ecomp \uaequiv)
+      \\
+      (\equivlevel(A)(B)(n)(\alpha)(\beta))
+    \end{multline*}
+  \end{solution}
+}
+\end{document}

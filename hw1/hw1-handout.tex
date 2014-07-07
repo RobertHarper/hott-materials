@@ -1,0 +1,384 @@
+\documentclass[12pt]{article}
+
+\input{hw1-macros}
+\usepackage{palatino}
+\usepackage{mdframed}
+
+\newcommand{\cut}[1]{}
+\def\StripPrefix#1>{}
+\def\jobis#1{FF\fi
+  \def\predicate{#1}%
+  \edef\predicate{\expandafter\StripPrefix\meaning\predicate}%
+  \edef\job{\jobname}%
+  \ifx\job\predicate
+}
+\if\jobis{hw1-solution}%
+  \newcommand{\showsol}[1]{\color{FireBrick}#1\normalcolor}%
+\else%
+  \newcommand{\showsol}[1]{\cut{#1}}%
+\fi
+\newenvironment{sol}{\trivlist \item[\hskip \labelsep{\bf
+Solution:}]}{\endtrivlist}
+\newcommand{\showextra}[1]{\color{DarkOliveGreen}#1\normalcolor}
+\mdfdefinestyle{extra}{linecolor=DarkOliveGreen,fontcolor=DarkOliveGreen}
+
+\title{\Large\textbf{
+  Homework 1: Heyting Algebra and IPL}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 19/Sep/13\\
+Due: 3/Oct/13
+}
+
+\begin{document}
+
+\maketitle
+
+\showextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Change \texttt{(2013/10/1 10pm)}:} There was a 24-hour extension.
+    The new deadline is shown above.
+  \end{mdframed}
+}
+
+This is 15-819's first homework assignment!
+
+\section{Heyting Meets Boole}
+
+The goal of this section is to reason about an algebra,
+for example a Boolean algebra,
+through abstract properties,
+without appealing a particular model,
+such as \texttt{true} and \texttt{false}.
+In particular, meets and joins are defined by their \emph{universal properties}
+instead of truth tables.
+
+As mentioned in the lectures, with implications one can show distributiveness
+of any Heyting algebra.
+The following is one of the most interesting parts in the proof.
+\begin{task}
+  Show that $A \meet (B \join C) \leq (A \meet B) \join (A \meet C)$
+  in any Heyting algebra.
+
+  \begin{hint}
+    You might find Yoneda's Lemma useful, which says (in this particular context)
+    $A \leq B$ iff for all $C$, $B \leq C$ implies $A \leq C$.
+    There is a short proof with Yoneda's, and another short proof without.
+  \end{hint}
+\end{task}
+
+\showsol{
+\begin{sol}
+  (This is a demonstration of derivations.)
+  {
+    \scriptsize
+    \[
+      \infer{
+        \infer{ }{A \meet (B \join C) \leq B \join C}
+        \\
+        \infer{
+          \infer{
+            \infer{ }{A \meet B \leq (A \meet B) \join (A \meet C)}
+          }{
+            B \leq A \exp (A \meet B) \join (A \meet C)
+          }
+          \\
+          \infer{
+            \infer{ }{A \meet C \leq (A \meet B) \join (A \meet C)}
+          }{
+            C \leq A \exp (A \meet B) \join (A \meet C)
+          }
+        }{
+          B \join C \leq A \exp (A \meet B) \join (A \meet C)
+        }
+      }{
+        A \meet (B \join C) \leq A \exp (A \meet B) \join (A \meet C)
+      }
+    \]
+  }
+  and so
+  {\scriptsize
+    \[
+      \infer{
+        \infer{ }{A \meet (B \join C) \leq A}
+        \\
+        A \meet (B \join C) \leq A \exp (A \meet B) \join (A \meet C)
+      }{
+        A \meet (B \join C) \leq A \meet (A \exp (A \meet B) \join (A \meet C))
+      }
+    \]
+  }
+  and finally
+  {\scriptsize
+    \[
+      \infer{
+        A \meet (B \join C) \leq A \meet (A \exp (A \meet B) \join (A \meet C))
+        \\
+        \infer{ }{A \meet (A \exp (A \meet B) \join (A \meet C)) \leq (A \meet B) \join (A \meet C)}
+      }{
+        A \meet (B \join C) \leq (A \meet B) \join (A \meet C)
+      }.
+    \]
+  }
+\end{sol}
+}
+
+In class we also gave two definitions of negations $\neg A$,
+one with explicit construction and the other through universal properties.
+The next task is to show that these two definitions are equivalent.
+\begin{task}
+  Show that in any Heyting algebra,
+  $A \exp \init$ is one of the largest elements inconsistent with $A$,
+  and is equivalent to any largest inconsistent one.
+\end{task}
+\showextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Change \texttt{(2013/9/26 4pm)}:}
+    The above task has been reworded for clarification.
+  \end{mdframed}
+}
+\showsol{
+\begin{sol}
+  By definition we have $A \meet (A \exp \init) \leq \init$ and also for any $B$,
+  \[
+    \infer{
+      A \meet B \leq \init
+    }{
+      B \leq A \exp \init
+    }.
+  \]
+  All largest such elements are isomorphic simply because of being largest.
+\end{sol}
+}
+
+Finally, with the introduction of mighty complements,
+exponentials become definable if distributiveness is assumed.
+As a corollary, in Boolean algebras negations and complements collide.
+(Please refer to the lecture note for the correct definition of complements.
+There was a mistake in the definition given in class.)
+\begin{task}
+  Show that in any Boolean algebra (complemented distributive lattice),
+  $\comp A \join B$ is a valid implementation of $A \exp B$.
+  That is, it satisfies all properties of $A \exp B$.
+\end{task}
+\showsol{
+\begin{sol}\mbox{}
+  \begin{itemize}
+    \item ``$A \meet (A \exp B) \leq B$.''
+
+      We have $A \meet (\comp A \join B) \leq (A \meet \comp A) \join (A \meet B)$.
+      For the first branch, $A \meet \comp A \leq \init \leq B$.
+      For the second branch, $A \meet B \leq B$.
+      Thus $A \meet (\comp A \join B) \leq B$.
+    \item ``If $A \meet C \leq B$ then $C \leq A \exp B$.''
+
+      Since $C \leq \final \leq A \join \comp A$,
+      $C \leq (A \join \comp A) \meet C \leq (A \meet C) \join (\comp A \meet C)$.
+      For the first branch, $A \meet C \leq B \leq \comp A \join B$.
+      For the second branch, $\comp A \meet C \leq \comp A \leq \comp A \join B$.
+      Therefore $C \leq \comp A \join B$.
+  \end{itemize}
+\end{sol}
+}
+
+\section{IPL Structural Engineering}
+
+Here we will explore structural properties of IPL, among which
+one of the most important is \emph{transitive} shown below.
+
+\begin{task}
+  Show that IPL is transitive, which is to say
+  \[
+    \infer{
+      \ctx, \ctx' \entails P \true
+      \\
+      \ctx, P \true, \ctx' \entails Q \true
+    }{
+      \ctx, \ctx' \entails Q \true
+    }
+  \]
+  is admissible.
+  You only have to consider the case that the last rule applied in the right sub-derivation
+  (of $\ctx, P \true, \ctx' \entails Q \true$)
+  is either the primitive reflexivity or rules in the negative fragment.
+  You may assume weakening and exchange as admissible rules.
+\end{task}
+\showsol{
+\begin{sol}
+  Induction on the right sub-derivation. Consider the last rule applied.
+  \begin{itemize}
+    \item Reflexivity.
+
+      If $Q \true$ is proved from that particular $P \true$ in the context by reflexivity,
+      then $Q \true = P \true$ and by the assumption $\ctx, \ctx' \entails P \true$.
+      Otherwise, that particular $P \true$ is irrelevant
+      and one can apply reflexivity to the rest of the context to obtain $Q \true$.
+
+    \item $\top$I.
+      \[
+        \infer{
+        }{
+          \ctx, P \true, \ctx' \entails \top \true
+        }.
+      \]
+      By the same rule $\ctx, \ctx' \entails \top \true$.
+    
+    \item $\meet$I.
+      \[
+        \infer{
+          \ctx, P \true, \ctx' \entails Q \true
+          \\
+          \ctx, P \true, \ctx' \entails R \true
+        }{
+          \ctx, P \true, \ctx' \entails Q \meet R \true
+        }.
+      \]
+      By inductive hypotheses we have
+      $\ctx, \ctx' \entails Q \true$
+      and
+      $\ctx, \ctx' \entails R \true$.
+      Therefore
+      \[
+        \infer{
+          \ctx, \ctx' \entails Q \true
+          \\
+          \ctx, \ctx' \entails R \true
+        }{
+          \ctx, \ctx' \entails Q \meet R \true
+        }.
+      \]
+    \item $\meet$E$_1$.
+      \[
+        \infer{
+          \ctx, P \true, \ctx' \entails Q \meet R \true
+        }{
+          \ctx, P \true, \ctx' \entails Q \true
+        }.
+      \]
+      By inductive hypothesis $\ctx, \ctx' \entails Q \meet R \true$.
+      And so $\ctx, \ctx' \entails Q \true$.
+    \item $\meet$E$_2$.
+      \[
+        \infer{
+          \ctx, P \true, \ctx' \entails R \meet Q \true
+        }{
+          \ctx, P \true, \ctx' \entails Q \true
+        }.
+      \]
+      By inductive hypothesis $\ctx, \ctx' \entails R \meet Q \true$.
+      And so $\ctx, \ctx' \entails Q \true$.
+    \item $\imp$I.
+      \[
+        \infer{
+          \ctx, P \true, \ctx', Q \true \entails R \true
+        }{
+          \ctx, P \true, \ctx' \entails Q \imp R \true
+        }.
+      \]
+      By weakening $\ctx, \ctx', Q \true \entails P \true$.
+      By inductive hypothesis $\ctx, \ctx', Q \true \entails R \true$
+      and thus $\ctx, \ctx' \entails Q \imp R \true$.
+    \item $\imp$E.
+      \[
+        \infer{
+          \ctx, P \true, \ctx' \entails R \imp Q \true
+          \\
+          \ctx, P \true, \ctx' \entails R \true
+        }{
+          \ctx, P \true, \ctx' \entails Q \true
+        }.
+      \]
+      By inductive hypotheses
+      $\ctx, \ctx' \entails R \imp Q \true$
+      and
+      $\ctx, \ctx' \entails R \true$.
+      Thus from the same rule
+      $\ctx, \ctx' \entails Q \true$.
+  \end{itemize}
+\end{sol}
+}
+
+\section{Semantical Analysis of IPL}
+
+Any Heyting algebra can be a model of IPL.
+In fact, $\ctx \entails P \true$ is provable iff $\ctx^+ \leq P^*$ in any Heyting algebra,
+where $(\text{--})^*$ is the straightforward lifting of
+any evaluation function from atomic propositions
+to elements in the Heyting algebra in question,
+and $\ctx^+$ is defined as the comprehension of $(\text{--})^*$
+through the following equations:
+\begin{enumerate}
+  \item $\cdot^+ = \top$.
+  \item $(\ctx, P\true)^+ = P^* \meet \ctx^+$.
+\end{enumerate}
+
+\begin{task}
+  Show that for any Heyting algebra and any evaluation function on atoms,
+  if $\ctx \entails P \true$ then $\ctx^+ \leq P^*$.
+  You only have to consider the cases in which the last rule applied is ($\imp$I) or ($\imp$E).
+\end{task}
+
+\showextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Change \texttt{(2013/10/1 10pm)}:}
+    The task is intended to be a general statement about any Heyting algebra
+    and any evaluation function on atoms.  The evaluation function on propositions
+    is always lifted (in the way described in class) from the evaluation function on atoms.
+  \end{mdframed}
+}
+
+\showsol{
+\begin{sol}\mbox{}
+  \begin{itemize}
+    \item $\imp$I.
+
+      By inductive hypothesis we have
+      $P^* \meet \ctx^+ \leq Q^*$
+      and thus $\ctx^+ \leq P^* \exp Q^* = (P \exp Q)^*$.
+    \item $\imp$E.
+
+      By inductive hypotheses $\ctx^+ \leq P^* \exp Q^*$ and $\ctx^+ \leq P^*$.
+      Therefore $\ctx^+ \leq P^* \meet (P^* \exp Q^*) \leq Q^*$.
+  \end{itemize}
+\end{sol}
+}
+
+\begin{task}
+  Consider the Lindenbaum algebra of IPL where
+  the elements are all propositions in IPL
+  (with the translation $(\text{--})^*$ being the identity function)
+  and the relationship $\leq$ is defined by provability in IPL.%
+  \footnote{To simplify the problem, we avoid taking quotients by interprovability,
+  but one must consider that if a partial order is desired.}
+  That is, $A \leq B$ iff $A \true \entails B \true$.
+  Show that this is a Heyting algebra.
+  You only have to prove the transitivity.
+  You may assume weakening and exchange of IPL, or cite previous tasks as lemmas.
+\end{task}
+
+\showsol{
+  \begin{sol}\mbox{}
+    \begin{itemize}
+      \item Transitivity.
+
+        Suppose $A \leq C$ and $C \leq B$.
+        By weakening of IPL, $C \true, A \true \entails B \true$.
+        By transitivity of IPL, $A \true \entails B \true$, and thus $A \leq B$.
+    \end{itemize}
+  \end{sol}
+}
+
+\showextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Remark \texttt{(2013/9/25 9am)}:}
+    To really complete the theorem, you need to show that $\Gamma \entails A \true$
+    iff $\Gamma^+ \true \entails A \true$. You do not have to prove this
+    for this homework.
+  \end{mdframed}
+}
+
+\end{document}

@@ -1,0 +1,511 @@
+\documentclass[12pt]{article}
+
+\input{hw4-macros}
+
+\usepackage{palatino}
+\usepackage{mdframed}
+\usepackage[usenames,svgnames]{xcolor}
+\newcommand{\cut}[1]{}
+\def\StripPrefix#1>{}
+\def\jobis#1{FF\fi
+  \def\predicate{#1}%
+  \edef\predicate{\expandafter\StripPrefix\meaning\predicate}%
+  \edef\job{\jobname}%
+  \ifx\job\predicate
+}
+\if\jobis{hw4-solution}%
+  \newcommand{\marksolution}[1]{\color{FireBrick}#1\normalcolor}%
+\else%
+  \newcommand{\marksolution}[1]{\cut{#1}}%
+\fi
+\newenvironment{solution}{\trivlist \item[\hskip \labelsep{\bf
+Solution:}]}{\endtrivlist}
+\newrobustcmd{\markextra}[1]{\color{DarkOliveGreen}#1\normalcolor}
+\mdfdefinestyle{extra}{linecolor=DarkOliveGreen,fontcolor=DarkOliveGreen}
+
+\title{\Large\textbf{
+  Homework 4: Second Identity Crisis}
+\normalsize\\
+15-819 Homotopy Type Theory}
+
+\author{}
+
+\date{%
+Out: 4/Nov/13\\
+Due: 18/Nov/13
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Application Programming Interface}
+
+Assume
+$\ctx \entails f : A \to B$ and
+$\ctx \entails g : B \to C$.
+Here are some useful properties of $\ap$.
+\begin{align*}
+  &\ctx \entails \blank : \prod_{m:A}\ap_f(\refl_A(m)) = \refl_B(f\,m)
+  \\
+  &\ctx \entails \blank : \prod_{m,n:A}\prod_{p:m=n}\ap_f(p^{-1}) = \ap_f(p)^{-1}
+  \\
+  &\ctx \entails \apconcat : \prod_{l,m,n:A}\prod_{p:l=m}\prod_{q:m=n}\ap_f(p \concat q) = \ap_f(p) \concat \ap_f(q)
+  \\
+  &\ctx \entails \blank : \prod_{m,n:A}\prod_{p:m=n}\ap_{\id_A}(p) = p
+  \\
+  &\ctx \entails \apcomp : \prod_{m,n:A}\prod_{p:m=n}\ap_{g \comp f}(p) = \ap_g(\ap_f(p))
+\end{align*}
+% Basically these say that $\ap_f(p)$ is a bifunctor with respect to $f$ and $p$.
+
+\pagebreak[2]
+
+\begin{task}
+  Implement $\apconcat$ and $\apcomp$.
+  \begin{align*}
+    &\ctx \entails \apconcat : \prod_{l,m,n:A}\prod_{p:l=m}\prod_{q:m=n}\ap_f(p \concat q) = \ap_f(p) \concat \ap_f(q)
+    \\
+    &\ctx \entails \apcomp : \prod_{m,n:A}\prod_{p:m=n}\ap_{g \comp f}(p) = \ap_g(\ap_f(p))
+  \end{align*}
+  You may assume that $\refl(m) \concat p \jdeq p$, $\refl(m)^{-1} \jdeq \refl(m)$,
+  and $\ap_f(\refl(m)) \jdeq \refl(f(m))$.
+  \begin{hint}
+    Make sure that your motives are well-typed
+    as you did for the associativity in Homework~3.
+  \end{hint}
+\end{task}
+
+\marksolution{
+\begin{solution}
+  All the functions:
+  \begin{align*}
+    &\,
+    \lambda m.\refl_{f(m)=f(m)}(\refl_B(f(m)))
+    \\
+    &\,
+    \lambda mnp. \J[m.n.p.\ap_f(p^{-1}) = \ap_f(p)^{-1}](p, x.\refl_{f\,m=f\,m}(\refl_B(f(m))))
+    \\
+    \apconcat
+    \defeq
+    &\,
+    \textstyle
+    \lambda lmnp. \J[l.m.p.\prod_q\ap_f(p \concat q) = \ap_f(p) \concat \ap_f(q)](p,
+    m.\lambda q.\refl_{f(m)=f(n)}(\ap_f(q)))
+    \\
+    &\,
+    \lambda mnp.\J[m.n.p.\ap_{\id_A}(p) = p](p, m.\refl_{m=m}(\refl_A(m)))
+    \\
+    \apcomp
+    \defeq
+    &\,
+    \lambda mnp.\J[m.n.p.\ap_{g \comp f}(p) = \ap_g(\ap_f(p))](p, m.\refl_{g(f(m))=g(f(m))}(\refl_C(g(f(m))))
+  \end{align*}
+\end{solution}
+}
+
+\section{Paths to Infinity}
+\begin{verse}
+  \textit{It's one thing to feel that you are on the right path, but it's another to think yours is the only path.}%
+  \footnote{This quote has been contributed to Paulo Coelho on the Internet, but I could not locate the source.}
+\end{verse}
+
+One of the common tasks in HoTT is to
+understand the structure of the path space $\Id_A(m,n)$
+of a particular space $A$,
+with the goal to find a seemingly more manageable type equivalent to $\Id_A(m,n)$,
+which is to show that
+\[
+  \prod_{x,y:A} \Id_A(x,y) \eqv F(x,y)
+\]
+for some ``explicit'' $F$.
+Recall that the data format of an equivalence is
+$(f,(g,\alpha),(h,\beta))$
+where $\alpha$ is a witness of $g$ being a right-inverse of $f$
+and $\beta$ is of $h$ being a left-inverse.
+
+\subsection{Tops and Bottoms are Dual in Many Ways}
+
+\begin{task}
+  Show that $\prod_{x,y:\top} \Id_\top(x,y) \eqv \top$
+  (where $F(x,y) \defeq \top$).
+  You do not have to justify your code.
+  \begin{hint}
+    What is the $\eta$ rule of $\top$?
+  \end{hint}
+\end{task}
+
+\marksolution{
+  \begin{solution}
+    $\lambda xy.(f,(g,\alpha),(h,\beta))$ with the following data:
+    \[
+      \begin{array}{lcl}
+        f &\defeq& \lambda \dummy . \triv
+        \\
+        g &\defeq& \lambda \dummy . \refl_\top(\triv)
+        \\
+        \alpha &\defeq& \lambda \dummy . \refl_\top(\triv)
+        \\
+        h &\defeq& \lambda \dummy . \refl_\top(\triv)
+        \\
+        \beta &\defeq& \lambda p . \J[\dummy.\dummy.p.\refl_\top(\triv)=p](p,\dummy.\refl_{\triv=\triv}(\refl_\top(\triv)))
+      \end{array}
+    \]
+  \end{solution}
+}
+
+\begin{task}
+  Show that $\prod_{x,y:\bot} \Id_\bot(x,y) \eqv \bot$
+  (where $F(x,y) \defeq \bot$).
+  You do not have to justify your code.
+  \begin{hint}
+    Favonia can answer this with less than 30 characters.
+  \end{hint}
+\end{task}
+
+\marksolution{
+  \begin{solution}
+    $\displaystyle
+      \lambda xy.\abort[\Id_\bot(x,y) \eqv \bot](x)
+    $
+  \end{solution}
+}
+
+\subsection{Pathbreaking Techniques}
+
+Now let's focus on the product type.
+In class we almost finished the characterization
+except the definition of $\ap^2$ and some critical lemmas.
+As a reminder, the goal is to show that
+\[
+  \prod_{x,y:A\times B} \Id_{A\times B}(x,y) \eqv \Id_A(\fst(x),\fst(y)) \times \Id_B(\snd(x),\snd(y)).
+\]
+
+There are many, many ways to define $\ap^2$
+but we will only cover two special ones.
+Their particularity is that the Eckmann-Hilton theorem
+can be trivially derived from the equivalence between them!
+One of them is shown below,
+assuming that $f : C \to D \to E$,
+$p : c_1 =_C c_2$, and $q : d_1 =_D d_2$
+in the current context.
+\[
+  \ap^2_f(p,q) \defeq \ap_{\lambda c.f(c)(d_1)}(p) \concat \ap_{f(c_2)}(q)
+\]
+\begin{task}
+  \label{task:ap2prime}
+  Find another one which is ``symmetric'' to the above implementation,
+  where $q$ comes before $p$ instead of $p$ coming before $q$.
+  (We will refer to this implementation as $\ap'^2_f$.)
+\end{task}
+\marksolution{
+  \begin{solution}
+    $\displaystyle
+    \ap'^2_f(p,q) \defeq \ap_{f(c_1)}(q) \concat \ap_{\lambda c.f(c)(d_2)}(p)
+    $
+  \end{solution}
+}
+
+In order to complete the characterization, for every $x,y : A \times B$
+we need to prepare the data $(f,(g,\alpha),(h,\beta))$ for the equivalence.
+We already implemented $f$, $g$ and $h$ as follows:
+\[
+  \begin{array}{lcl}
+    f &\defeq& \lambda p.\pair{\ap_\fst(p)}{\ap_\snd(p)}
+    \\
+    g &\defeq& \lambda q.\ap^2_{\lambda ab.\pair{a}{b}}(\fst(q),\snd(q))
+    \\
+    h &\defeq& g
+  \end{array}
+\]
+The remaining are $\alpha$ and $\beta$. The $\beta$ of type
+\[
+  \prod_{p : \Id_{A\times B}(x,y)} h(f(p)) = p
+\]
+is relatively easy because the domain is $\Id_{A\times B}(x,y)$
+and $\J$ is directly applicable.
+Let's look at the more interesting $\alpha$ of type
+\[
+  \prod_{q : \Id_{A}(\fst(x),\fst(y)) \times \Id_B(\snd(x),\snd(y))} f(g(q)) = q.
+\]
+\begin{task}
+  Implement $\alpha$.
+  You may assume that $\refl(m) \concat p \jdeq p$ and $\ap_f(\refl(m)) \jdeq \refl(f(m))$,
+  as usual.
+  \begin{hint}
+    Generalize the theorem
+    so that you have free endpoints instead of $\fst(x)$ or $\snd(y)$.
+  \end{hint}
+\end{task}
+\marksolution{
+  \begin{solution}
+    \begin{multline*}
+      \textstyle
+      \alpha \defeq \lambda q.\J[x_1.y_1.q_1.
+        f(\ap^2_{\lambda ab.\pair{a}{b}}(q_1,\ap_\snd(q))) = \pair{q_1}{\ap_\snd(q)}
+      ](\fst(q),z_1.
+      \\
+      J[x_2.y_2.q_2. f(\ap_{\lambda b.\pair{z_1}{b}}(q_2)) = \pair{\refl(z_1)}{q_2}]
+      (\snd(q),
+      z_2.\refl(\pair{\refl(z_1)}{\refl(z_2)})))
+      \end{multline*}
+  \end{solution}
+}
+
+\subsection{The Mysterious Case of Eckmann and Hilton}
+
+As mentioned above, the equivalence between $\ap^2$
+and $\ap'^2$ you gave in Task~\ref{task:ap2prime}
+directly leads to the Eckmann-Hilton theorem,
+\[
+  \prod_{(m{:}A)}\prod_{(p,q{:}\refl_A(m)=\refl_A(m))}p\concat q = q\concat p,
+\]
+which asserts the abelianness of higher groups
+induced by loops at $\refl_A(m)$ and path concatenation.
+We will prove this in this subsection.
+
+Note that this is the first ``big'' theorem
+in homework assignments
+and the code could easily become unreadable
+if Favonia did not divide the theorem into multiple tasks.
+The following optional text shows one way to write readable code
+even when the proof is ridiculously long.
+(You do not have to follow the style.)
+\begin{mdframed}
+The code of type $a = b$
+often involves a long chain of transitivity from $a$ to $b$ through lots of intermediate points.
+If we just write down paths $p_0 \concat (p_1 \concat \cdots p_{n-1} \cdots )$ as the code,
+no one can understand the logic.
+A better solution is to write down \emph{both} the proof \emph{and} the points
+in a clear manner.
+(In proof-irrelevant mathematics, one simply write down all the points as
+$a_0 = a_1 = \cdots = a_n$.)
+Here we will introduce to you the style adopted in the current \texttt{HoTT-Agda} library
+(containing computer-checked HoTT proofs written for the proof assistant \texttt{Agda}).
+The general form of this style is
+\[
+  \begin{array}{l}
+    a_0
+    \\
+    \quad\reason{p_0}
+    \\
+    a_1
+    \\
+    \quad\vdots
+    \\
+    a_{n-1}
+    \\
+    \quad\reason{p_{n-1}}
+    \\
+    a_n
+    \\
+    \quad\qedsymbol
+  \end{array}
+\]
+where $p_i$ is a path showing that $a_i$ and $a_{i+1}$ are equal.
+For example, the following code snippet demonstrates the associativity among four paths,
+assuming that the lemma $\concatassoc(p)(q)(r)$
+inhabits the type $(p \concat q) \concat r = p \concat (q \concat r)$.
+\[
+  \begin{array}{l}
+    ((p \concat q) \concat r) \concat s
+    \\
+    \quad\reason{\ap_{\lambda x.x\concat s}(\concatassoc(p)(q)(r))}
+    \\
+    (p \concat (q \concat r)) \concat s
+    \\
+    \quad\reason{\concatassoc(p)(q \concat r)(s)}
+    \\
+    p \concat ((q \concat r) \concat s)
+    \\
+    \quad\reason{\ap_{\lambda x.p\concat x}(\concatassoc(q)(r)(s))}
+    \\
+    p \concat (q \concat (r \concat s))
+    \\
+    \quad\qedsymbol
+  \end{array}
+\]
+One can check that every path $p_i$ in the above example indeed has the type $a_i = a_{i+1}$.
+If $a_i$ and $a_{i+1}$ are definitionally equal
+but you nonetheless want to write them out for clarity,
+a trivial path $\refl(a_i)$ can be used.
+This style essentially marks the endpoints of every path
+in the chain of transitivity,
+but is clearer than using the primitive $\trans$ directly
+(as you did in Homework~3).
+As a side note,
+the general form can be implemented as $p_0 \concat ( p_1 \concat \cdots (p_{n-1} \concat \refl(a_n)) \cdots)$,
+and different implementations can give rise to different computational behaviors.
+\end{mdframed}
+
+\begin{task}
+  Assuming $p, q : \refl(m) = \refl(m)$, show that
+  \[
+    \ap^2_{\lambda xy.x\concat y}(p,q) = p \concat q
+  \]
+  with access to the following lemmas.
+  \begin{align*}
+    \apid(p) &: \ap_{\id}(p) = p\\
+    \lemmaone(p) &: \ap_{\lambda x.x\concat\refl(n)}(p) = p
+  \end{align*}
+  \begin{hint}
+    $\lambda x.\refl(n)\concat x \jdeq \id$.
+  \end{hint}
+\end{task}
+\markextra{
+  \begin{mdframed}[style=extra]
+    \textsc{Clarification \texttt{(2013/11/11 11am)}:}
+    The $\mathtt{lemma}_1$ in Task 6 is taking a path of type
+    $\mathtt{refl}(n) = \mathtt{refl}(n)$ for some $n$,
+    not a path with generic endpoints,
+    as this is what you need in proving the theorem.
+    It is a good exercise to find out a generalized theorem
+    which can be used directly as the motive of $\mathsf{J}$.
+  \end{mdframed}
+}
+\marksolution{
+  \begin{solution}
+    $\displaystyle
+      \mathtt{code}_1(p)(q) \defeq \ap^2_{\lambda xy.x\concat y}(\lemmaone(p),\apid(q))
+    $
+  \end{solution}
+}
+
+\begin{bonus}
+  Similarly, show that $\ap'^2_{\lambda xy.x\concat y}(p,q) = q \concat p$.
+\end{bonus}
+\marksolution{
+  \begin{solution}
+    $\displaystyle
+      \mathtt{code}_2(p)(q) \defeq \ap^2_{\lambda xy.x\concat y}(\apid(q),\lemmaone(q))
+    $
+  \end{solution}
+}
+
+\begin{task}
+  Prove the Eckmann-Hilton theorem with the following lemma:
+  \[
+    \lemmatwo(f)(p)(q) : \ap^2_f(p,q) = \ap'^2_f(p,q).
+  \]
+\end{task}
+\marksolution{
+  \begin{solution}
+    \[
+      \lambda mpq.\mathtt{code}_1(p)(q)^{-1} \concat (\lemmatwo(\lambda pq.p \concat q)(p)(q) \concat \mathtt{code}_2(p)(q))
+    \]
+  \end{solution}
+}
+
+\section{Equivalence is an Equivalence}
+
+Please finish the following tasks without using the Univalence Axiom.
+
+\begin{task}
+  \textbf{Reflexivity.} Show that $A \eqv A$ for any $A : \U$.
+\end{task}
+\marksolution{
+  \begin{solution}
+    $(f,(g,\alpha),(h,\beta))$ with the following components:
+    \begin{align*}
+      f &\defeq \id_A
+      \\
+      g &\defeq \id_A
+      \\
+      \alpha &\defeq \lambda a.\refl_A(a)
+      \\
+      h &\defeq \id_A
+      \\
+      \beta &\defeq \lambda a.\refl_A(a)
+    \end{align*}
+  \end{solution}
+}
+
+\begin{task}
+  \textbf{Symmetry.}
+  Assuming you have the data $(f,(g,\alpha),(h,\beta))$ of type $A \eqv B$, show that $B \eqv A$.
+  You may assume that $\qinv(f)$ with the data $(g',\alpha',\beta')$ is also available,
+  but it is fun to finish this task without using it.
+\end{task}
+
+\marksolution{
+  \begin{solution}
+    There are many ways without using $\qinv(f)$. This is not an exhaustive list.
+    \begin{itemize}
+      \item Picking $g$.
+        \begin{align*}
+          f' &\defeq g
+          \\
+          g' &\defeq f
+          \\
+          \alpha' &\defeq \lambda a. (\beta(g(f(a)))^{-1}) \concat (\ap_h(\alpha(f(a)))) \concat \beta(a))
+          \\
+          h' &\defeq f
+          \\
+          \beta' &\defeq \alpha
+        \end{align*}
+      \item Picking $h$.
+        \begin{align*}
+          f' &\defeq h
+          \\
+          g' &\defeq f
+          \\
+          \alpha' &\defeq \beta
+          \\
+          h' &\defeq f
+          \\
+          \beta' &\defeq \lambda b. (\alpha(f(g(b)))^{-1}) \concat (\ap_f(\beta(g(b))) \concat \alpha(b))
+        \end{align*}
+      \item Balanced choice.
+        \begin{align*}
+          f' &\defeq h \comp (f \comp g)
+          \\
+          g' &\defeq f
+          \\
+          \alpha' &\defeq \lambda a. \ap_h(\alpha(f(a))) \concat \beta(a)
+          \\
+          h' &\defeq f
+          \\
+          \beta' &\defeq \lambda b. \ap_f(\beta(g(b))) \concat \alpha(b)
+        \end{align*}
+    \end{itemize}
+    Here's one way to use $\qinv(f)$.
+    \begin{align*}
+      f'' &\defeq g'
+      \\
+      g'' &\defeq f
+      \\
+      \alpha'' &\defeq \beta'
+      \\
+      h'' &\defeq f
+      \\
+      \beta'' &\defeq \alpha'
+    \end{align*}
+  \end{solution}
+}
+
+\begin{task}  
+\textbf{Transitivity.}
+  Assuming you have
+  the data
+  $(f_1,(g_1,\alpha_1),(h_1,\beta_1))$ of type $A \eqv B$
+  and
+  $(f_2,(g_2,\alpha_2),(h_2,\beta_2))$ of type $B \eqv C$
+  at hand,
+  show that $A \eqv C$.
+\end{task}
+\marksolution{
+  \begin{solution}
+    \begin{align*}
+      f &\defeq f_2 \comp f_1
+      \\
+      g &\defeq g_1 \comp g_2
+      \\
+      \alpha &\defeq \lambda b. \ap_{f_2}(\alpha_1(g_2(b))) \concat \alpha_2(b)
+      \\
+      h &\defeq h_1 \comp h_2
+      \\
+      \beta &\defeq \lambda a. \ap_{h_1}(\beta_2(f_1(a))) \concat \beta_1(a)
+    \end{align*}
+  \end{solution}
+}
+
+\end{document}
