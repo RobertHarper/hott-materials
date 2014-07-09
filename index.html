@@ -1,0 +1,560 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0040)http://www.cs.cmu.edu/~rwh/courses/hott/ -->
+<!-- Original file by Robert Harper <rwh@cs.cmu.edu>; last modified: Nov 20 2013 -->
+<!-- Copied and modified (added video links) by <williamdemeo@gmail.com>; last modified: Jun 23 2014 -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>15-819 Homotopy Type Theory</title>
+    <meta name="description" content="Carnegie Mellon Homotopy Type Theory Course">
+    <meta name="keywords" content="Carnegie Mellon Homotopy Type Theory Course">
+    <link rel="stylesheet" href="hott.css" type="text/css">
+  </head>
+
+  <body>
+
+    <div id="header">
+    <div id="menu">
+      <a href="http://www.cs.cmu.edu/~rwh/courses/hott/#info">Course Information</a>
+      <a href="http://www.cs.cmu.edu/~rwh/courses/hott/#desc">Synopsis</a>
+      <a href="http://www.cs.cmu.edu/~rwh/courses/hott/#texts">References</a>
+      <a href="http://www.cs.cmu.edu/~rwh/courses/hott/#participation">Participation</a>
+      <a href="http://www.cs.cmu.edu/~rwh/courses/hott/#schedule">Schedule</a>
+    </div>
+    </div>
+
+    <div id="content">
+
+    <h1>15-819 Homotopy Type Theory</h1>
+
+    <hr>
+
+    <div id="info">
+
+      <h2>Course Information</h2>
+
+      <table class="disp">
+	<tbody><tr>
+	  <td> Time: </td>
+	  <td> Mon-Wed 10:30-11:50 </td>
+	</tr>
+	<tr>
+	  <td> Room: </td>
+          <td><b>4303</b> GHC</td>
+	</tr>
+	<tr>
+	  <td> Instructor: </td>
+	  <td> <a href="http://www.cs.cmu.edu/~rwh">Robert Harper</a> </td>
+	  <td> Office Hour: Wednesday 1pm</td>
+	</tr>
+	<tr>
+	  <td> Piazza Page (self-register): </td>
+	  <td> <a href="https://piazza.com/cmu/fall2013/15819/home">Piazza Home	Page</a></td>
+	  <td> <em>(Please use for discussion and questions)</em></td>
+	</tr>
+	<tr>
+	  <td> Panopto Video: </td>
+	  <td>
+	    <a href="http://scs.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07756bb0-b872-4a4a-95b1-b77ad206dab3">
+	    Video Recordings</a>
+	  </td>
+	  <td> <em>(Recordings of lectures)</em></td>
+	</tr>
+      </tbody></table>
+    </div>
+
+    <div id="desc">
+
+      <h2>Synopsis</h2>
+
+      <p> This is a graduate research seminar on Homotopy Type Theory (HoTT), a
+      recent enrichment of Intuitionistic Type Theory (ITT) to include
+      "higher-dimensional" types.  The dimensionality of a type refers
+      to the structure of its <em>paths</em>, the constructive witnesses to the
+      equality of pairs of elements of a type, which themselves form a type, the
+      <em>identity type</em>.  In general a type is <em>infinite
+      dimensional</em> in the sense that it exhibits non-trivial structure at
+      all dimensions: it has elements, paths between elements, paths between
+      paths, and so on to all finite levels.  Moreover, the paths at each level
+      exhibit the algebraic structure of a <em>(higher) groupoid</em>, meaning
+      that there is always the "null path" witnessing reflexivity, the
+      "inverse" path witnessing symmetry, and the
+      "concatenation" of paths witnessing transitivity such that
+      group-like laws hold "up to higher homotopy".  Specifically,
+      there are higher-dimensional paths witnessing the associative, unital, and
+      inverse laws for these operations.  Altogether this means that a type is a
+      <em>weak ∞-groupoid</em>.  </p>
+
+      <p> The significance of the higher-dimensional structure of types lies in
+      the concept of a <em>type-indexed family of types</em>.  Such families
+      exhibit the structure of a <em>fibration</em>, which means that a path
+      between two indices "lifts" to a <em>transport</em> mapping
+      between the corresponding instances of the family that is, in fact, an
+      equivalence.  Thinking of paths as constructive witnesses for equality,
+      this amounts to saying that equal indices give rise to equivalent types,
+      and hence, by univalence, equal elements of the universe in which the
+      family is valued.  Thus, for example, if we think of the interval I as a
+      type with two endpoints connected by a path, then an I-indexed family of
+      types must assign equivalent types to the endpoints.  In contrast the type
+      B of booleans consists of two disconnected points, so that a B-indexed
+      family of types may assign unrelated types to the two points of B.
+      Similarly, mappings from I into another type A must assign connected
+      points in A to the endpoints of the interval, whereas mappings from B into
+      A are free to assign arbitrary points of A to the two booleans.  These
+      preservation principles are central to the structure of HoTT.
+      </p>
+
+      <p> In many cases the path structure of a type becomes trivial beyond a
+      certain dimension, called the <em>level</em> of the type.  By convention
+      the levels start at -2 and continue through -1, 0, 1, 2, and so on
+      indefinitely.  At the lowest, -2, level, the path structure of a type is
+      degenerate in that there is an element to which all other elements are
+      equal; such a type is said to be <em>contractible</em>, and is essentially
+      a singleton.  At the next higher level, -1, the type of paths between any
+      two elements is contractible (level -2), which means that any two elements
+      are equal, if there are any elements at all; such as type is a
+      <em>sub-singleton</em> or <em>h-proposition</em>.  At the next level, 0,
+      the type of paths between paths between elements is contractible, so that
+      any two elements are equal "in at most one way"; such a type is
+      a <em>set</em> whose types of paths (equality relations) are all h-prop's.
+      Continuing in this way, types of level 1 are <em>groupoids</em>, those of
+      level 2 are <em>2-groupoids</em>, and so on for all finite levels.  </p>
+
+      <p> ITT is capable of expressing only sets, which are types of level 0.
+      Such types may have elements, and two elements may be considered equal in
+      at most one way.  A large swath of (constructive) mathematics may be
+      formulated using only sets, and hence is amenable to representation in
+      ITT.  Computing applications, among others, require more than just sets.
+      For example, it is often necessary to suppress distinctions among elements
+      of a type so as to avoid over-specification; this is called <em>proof
+      irrelevance</em>.  Traditionally ITT has been enriched with an <em>ad
+      hoc</em> treatment of proof irrelevance by introducing a universe of
+      "propositions" with no computational content.  In HoTT such
+      propositions are types of level -1, requiring no special treatment or
+      distinction.  Such types arise by <em>propositional truncation</em> of a
+      type to render degenerate the path structure of a type above level -1,
+      ensuring that any two elements are equal in the sense of having a path
+      between them.  </p>
+
+      <p> Propositional truncation is just one example of a <em>higher inductive
+      type</em>, one that is defined by specifying generators not only for its
+      elements, but also for its higher-dimensional paths.  The propositional
+      truncation of a type is one that includes all of the elements of the type,
+      and, in addition, a path between any two elements, rendering them equal.
+      It is a limiting case of a <em>quotient type</em> in which only certain
+      paths between elements are introduced, according to whether they are
+      deemed to be related.  Higher inductive types also permit the
+      representation of higher-dimensional objects, such as the spheres of
+      arbitrary dimension, as types, simply by specifying their
+      "connectivity" properties.  For example, the topological circle
+      consists of a base point and a path starting and ending at that point, and
+      the topological disk may be thought of as two half circles that are
+      connected by a higher path that "fills in" the interior of the
+      circle. Because of their higher path structure, such types are not sets,
+      and neither are constructions such as the product of two circles.
+      </p>
+
+      <p>The <em>univalence axiom</em> implies that an equivalence between types
+      (an "isomorphism up to isomorphism") determines a path in a
+      universe containing such types.  Since two types can be equivalent in many
+      ways (for example, there can be distinct bijections between two sets),
+      univalence gives rise to types that are not sets, but rather are of a
+      higher level, or dimension.  The univalence axiom is mathematically
+      efficient because it allows us to treat equivalent types as equal, and
+      hence interchangeable in all contexts.  In informal settings such
+      identifications are often made by convention; in formal homotopy type
+      theory such identifications are true equations.
+      </p>
+
+   </div>
+
+   <div id="texts">
+
+      <h2>References</h2>
+
+      <h3>Text</h3>
+      <table class="disp">
+	<tbody><tr>
+	  <td>
+	    <a href="http://homotopytypetheory.org/book"><cite>Homotopy Type Theory:
+	    Univalent Foundations of Mathematics</cite></a>, Institute for
+	    Advanced Study, 2013.
+	  </td>
+	</tr>
+     </tbody></table>
+     <h3>Background</h3>
+      <table class="disp">
+	<tbody><tr>
+	  <td>
+	    Bengt Nordström, Kent Petersson, and Jan Smith.
+	    <a href="http://www.cse.chalmers.se/research/group/logic/book/"><cite>Programming
+	    in Martin-Löf's Type Theory</cite></a>, Oxford University Press, 1990.
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+	    Robert L. Constable, <em>et al.</em>.
+	    <cite>Implementing Mathematics with the Nuprl Proof Development System</cite>,
+	    Prentice-Hall, 2012.
+	  </td>
+	</tr>
+      </tbody></table>
+
+    </div>
+
+    <div id="requirements">
+      <h2>Requirements</h2>
+      <p>
+      The class is open to any PhD student, and to undergraduate or other
+      graduate students with permission of the instructor.  The course will be
+      self-contained. A well-prepared student will have some background in
+      formal logic and some prior experience with simple type theory.
+      </p>
+      <p>
+      No letter grades will be assigned for this class.  It should not be taken with
+      the expectation of fulfilling any course requirement or degree credit.
+      Full participation is required of all students to pass the course.
+      </p>
+      <p>
+      All students are required to complete assigned homework in a timely manner
+      (no later than one week after assigned) for review by the teaching assistant.
+      (Please send your homework as a PDF to Favonia.)
+      </p>
+      <p>
+      All students are required to participate in the weekly note-taking
+      process.  Each week two students are responsible for preparing typeset
+      course notes to be distributed before lecture each Monday.
+      </p>
+      <p>
+      <em>Please register yourself as a student on the Piazza web page linked above.</em>
+      </p>
+
+      <h2>Academic Integrity</h2>
+      <p>
+	<a name="integrity"></a> Unless explicitly instructed otherwise, <em>all
+        homework and exam work is to be solely your
+	own</em>, and may not be shared with or borrowed from any other person
+	in the course.  You are not permitted to draw upon assignments or
+	solutions from previous instances of the course, nor to
+	use course materials (such as assignments or programs) obtained from
+	any web site or other external source in preparing your work.
+      </p>
+      <p>
+        You may discuss homework assignments with other students in the class,
+        but you must adhere to the <em>whiteboard policy</em>.  At the end of
+        discussion the whiteboard must be erased, and you must not transcribe
+        or take with you anything that has been written on the board during your
+        discussion.  You must be able to reproduce the results solely on your
+        own after any such discussion.    
+      </p>
+    </div>
+
+    <div id="schedule">
+
+      <h2>Schedule of Lectures</h2>
+      <p>
+      To get the latest versions of notes, please check out the repository
+      <a href="https://github.com/favonia/hott-notes">favonia/hott-notes</a> on GitHub.
+      </p>
+      <table class="disp" id="sched" rules="groups">
+	<colgroup>
+	  <col width="5%" align="left">
+	  <col width="5%" align="right">
+	</colgroup>
+	<colgroup width="30%">
+	</colgroup><colgroup width="20%">
+	</colgroup><colgroup width="20%">
+	</colgroup><colgroup width="20%">
+	</colgroup><thead>
+	  <tr>
+            <th colspan="2">Date</th> <th>Topic</th> <th>Reading</th> <th>Notes/HW</th><th>Videos</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+            <td>Sep</td>
+	    <td>9</td>
+	    <td>Overview: Intuitionistic Type Theory</td>
+	    <td>HoTT 1; PMLTT 1</td>
+            <td>DeYoung &amp; Balzer
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week1.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=0945cc7f-48b7-4803-81af-e7193a3f461d">1. Course Intro</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>11</td>
+	    <td>Intuitionistic Propositional Logic</td>
+	    <td>HoTT 1; PMLTT 1</td>
+	    <td></td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=23fe0158-7e3b-49f2-a5e2-b20096f2b958">2. Judgements</a></td>
+
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>16</td>
+	    <td>Propositions as Types</td>
+            <td>PMLTT 2, 4</td>
+	    <td>Newstead &amp; Cheung
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week2.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=38e5ee9e-c2bc-4cba-9990-8faae69faa45">3. Transitivity</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>18</td>
+	    <td>Proof Reduction and Equivalence</td>
+	    <td>PMLTT 3</td>
+            <td>Homework 1 out (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw1/hw1-handout.pdf">handout</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw1/hw1-sample.tex">sample</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw1/hw1-macros.tex">macros</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw1/hw1-solution.pdf">solution</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=c1717cb9-3655-445d-824a-77c0666e5430">4. Exponentials</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>23</td>
+	    <td>(No Class)</td>
+            <td></td>
+	    <td></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>25</td>
+	    <td>(No Class)</td>
+	    <td></td>
+	    <td></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>30</td>
+	    <td>Universal Properties</td>
+            <td></td>
+	    <td>Newstead &amp; Cheung
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week3.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=a5c05b3b-1b65-45ad-8f70-d63e64fb34b1">5. Equality</a></td>
+	  </tr>
+	  <tr>
+            <td>Oct</td>
+	    <td>2</td>
+	    <td>Dependency: Families of Types</td>
+	    <td></td>
+            <td>Homework 1 due<br>
+              Homework 2 out (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw2/hw2-handout.pdf">handout</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw2/hw2-sample.tex">sample</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw2/hw2-macros.tex">macros</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw2/hw2-solution.pdf">solution</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=c5fb4805-6504-4368-a219-2f13bfb37e6a">6. IPL</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>7</td>
+	    <td>Dependency: Functions and Products; Induction Principles</td>
+            <td></td>
+	    <td>Koenig &amp; Arntzenius
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week4.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=ba77d4f6-3fbe-42cd-90c8-8265af95e508">7. Dependent Types</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>9</td>
+	    <td></td>
+	    <td></td>
+	    <td></td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=bbe4f042-a4df-4024-adde-1b2ad5900166">8. Transport </a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>14</td>
+	    <td>Identity Type; Functionality</td>
+            <td></td>
+	    <td>Fulton
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week5.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=2ea7a2f2-a16d-4735-a665-7cfbd3e7718e">9. Universes</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>16</td>
+	    <td>Groupoid Structure of Types</td>
+	    <td></td>
+            <td>Homework 2 due<br>
+              Homework 3 out (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw3/hw3-handout.pdf">handout</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw3/hw3-sample.tex">sample</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw3/hw3-macros.tex">macros</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw3/hw3-solution.pdf">solution</a>)</td>
+	    <td><a
+	href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=534b5318-0bfd-41e5-89f2-7dea26bc0a66">10. Groupoid
+	Structure of Types</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>21</td>
+	    <td>Functoriality</td>
+            <td></td>
+	    <td>Tassarotti &amp; Lewis
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week6.pdf">cached note</a>)</td>
+	    <td><a
+	href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=a433f5aa-2e57-4ee4-abe3-7c88f4596512">11. Functoriality</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>23</td>
+	    <td>Equivalences</td>
+	    <td></td>
+	    <td></td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=429215dd-124f-4bce-a66f-e0c4d40ab6e7">12.Equivalences</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>28</td>
+	    <td>Path Structure of Types</td>
+            <td></td>
+	    <td>Sojakova &amp; Lee
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week7.pdf">cached note</a>)</td>
+	    <td><a
+	href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=78e4fd66-67a9-4802-b300-db9889da35f0">13. Path
+	Structure of Types</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>30</td>
+	    <td>Justifying Identity Elimination</td>
+	    <td></td>
+            <td>Homework 3 due</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=2e9ea3ca-5167-41dc-9e3b-513d62bb41d8">14. Identity Elimination</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>Nov</td>
+	    <td>4</td>
+	    <td>Sets and Propositions</td>
+            <td></td>
+            <td>Martens &amp; Cavallo
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week8.pdf">cached note</a>)<br>Homework 4 out
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw4/hw4-handout.pdf">handout</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw4/hw4-sample.tex">sample</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw4/hw4-macros.tex">macros</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw4/hw4-solution.pdf">solution</a>)</td>
+	    <td><a
+	href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=97132471-3551-4bb2-a32c-753122a96cea">15. Sets
+	and Propositions</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>6</td>
+	    <td>Propositional Truncation</td>
+	    <td></td>
+	    <td></td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=287f3f12-fb20-4496-b99d-cbcceb8eefb0">16. ITT</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>11</td>
+	    <td>Propositions and Truncation</td>
+            <td></td>
+	    <td>Tassarotti &amp; Lewis
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week9.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=ac7edbff-ef18-4204-b2d4-d45f58bf3b34">17. Hedberg's Theorem</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>13</td>
+	    <td>Homotopy n-Types; Equivalences</td>
+	    <td></td>
+	    <td></td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=64e2d296-c577-4ea6-a7d0-644cba9ad1e6">18. Contractability</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>18</td>
+	    <td>Inductive Types</td>
+            <td></td>
+	    <td>Muller &amp; Cavallo
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week10.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=1ea06bf8-10eb-4ecf-98f1-4e21df5be53f">19. QuasiInverse</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>20</td>
+	    <td>Inductive Types</td>
+	    <td></td>
+	    <td>Homework 5 out
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw5/hw5-handout.pdf">handout</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw5/hw5-sample.tex">sample</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw5/hw5-macros.tex">macros</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw5/hw5-solution.pdf">solution</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw5/HW5Lemmas.agda">Agda lemmas</a>)
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/hw5/HW5.agda">Agda solution</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=e293b1ec-052b-4246-8d2a-9aebffde1285">20. Functors</a></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>
+	    </td><td>25</td>
+	    <td>Higher Inductive Types</td>
+            <td></td>
+	    <td>Sojakova &amp; Lee
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week11.pdf">cached note</a>)</td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=7dcc0d88-6ae9-4bad-861e-d00cadd51712">21. Inductive Types</a></td>
+	  </tr>
+	  <tr>
+            <td>
+	    </td><td>27</td>
+	    <td>(No Class)</td>
+	    <td></td>
+	    <td></td>
+	  </tr>
+	</tbody>
+	<tbody>
+	  <tr>
+            <td>Dec</td>
+	    <td>2</td>
+	    <td>Higher Inductive Types</td>
+            <td></td>
+	    <td>Muller &amp; Maurer
+              (<a href="http://www.cs.cmu.edu/~rwh/courses/hott/notes/notes_week12.pdf">cached note</a>)</td>
+	    <td><a
+	href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=7011b342-153d-4709-b443-9c47fd4b3c63">22.Higher
+	InductiveTypes</a></td>
+	  </tr>
+	  
+	  <tr>
+            <td>
+	    </td><td>4</td>
+	    <td>Basic Homotopy Theory</td>
+	    <td></td>
+	    <td></td>
+	    <td><a href="http://scs.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=c36a205f-3d1f-4475-8771-194b4f5040ce">23. Pushouts</a></td>
+	  </tr>
+	</tbody>
+      </table>
+
+    </div>
+
+    <hr>
+
+   <div id="modified">
+      <address><a href="mailto:rwh@cs.cmu.edu">Robert Harper</a></address>
+<!-- hhmts start -->Last modified: Wed Jul  9 00:03:21 EDT 2014 <!-- hhmts end -->
+   </div>
+
+    </div>
+  
+
+</body></html>
