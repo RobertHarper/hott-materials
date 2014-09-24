@@ -83,7 +83,7 @@ module HW5Lemmas where
 
   -- Section 3
   postulate
-    funext : {A B : U} {f g : A → B} → ((x : A) → f x == g x) → f == g
+    funext : {A : U} {B : A → U} {f g : (x : A) → B x} → ((x : A) → f x == g x) → f == g
 
   postulate
     equiv-inv : {A B : U} → (A ≃ B) → (B ≃ A)
